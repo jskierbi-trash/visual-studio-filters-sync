@@ -49,11 +49,11 @@ public class QSyncImport
 	public void debugPrint()
 	{
 		System.out.println("mToFilter: " + mToFilter);
-		System.out.println("mInclude: " + mInclude);
-		System.out.println("mSrc: " + mSrc);
+		System.out.println("\tmInclude: " + mInclude);
+		System.out.println("\tmSrc: " + mSrc);
 		for(String s: mMisc)
 		{
-			System.out.println("Misc: " + s);
+			System.out.println("\tMisc: " + s);
 		}
 	}
 }
