@@ -20,6 +20,7 @@ public class QSync
 {
 	private String mIncludes;
 	private String mCompiles;
+	private File mPwd;
 	
 	private ArrayList<QSyncVcxproj> mProjects;
 	
@@ -37,6 +38,8 @@ public class QSync
 		catch(IOException ex) { System.err.println("IOException reading document ("+qsyncfile.getName()+")"); }	
 		
 		if(qsyncDoc==null) System.exit(-1); //If file couldn't be read, kill process
+		
+		mPwd = qsyncfile.getAbsoluteFile().getParentFile();
 		
 		try
 		{
@@ -74,7 +77,7 @@ public class QSync
 				if(projFile.length()==0 || !projFile.matches(".*vcxproj$"))
 					throw new XMLParseException("proj attribute of <vcxproj> is not valid (must be *.vcxproj)");
 				
-				projFile = Helpers.resolvePath(projFile);
+				projFile = Helpers.resolvePath(mPwd.getAbsolutePath(), projFile);
 				
 				QSyncVcxproj proj = new QSyncVcxproj(projFile, projFile + ".filters");
 				NodeList importList = projNode.getChildNodes();
@@ -83,7 +86,7 @@ public class QSync
 				{
 					Node importNode = importList.item(j);
 					if(!importNode.getNodeName().equals("import")) continue;
-					
+
 					String toFilter = importNode.getAttributes().getNamedItem("tofilter").getNodeValue();
 					toFilter = Helpers.fixSlashes(toFilter);
 					if(toFilter.length()==0 || !toFilter.matches("[a-zA-Z0-9 ]*(\\\\[a-zA-Z0-9 ]*)*"))
@@ -98,33 +101,36 @@ public class QSync
 					boolean src=false, inc=false;
 					for(int n=0; n<importIncludesList.getLength(); ++n)
 					{
-						if(!importNode.getNodeName().equals("include")
-						   || !importNode.getNodeName().equals("src")
-						   || !importNode.getNodeName().equals("misc"))
-							continue;
-						
 						Node includeNode = importIncludesList.item(n);
+						if(!includeNode.getNodeName().equals("include")
+								   && !includeNode.getNodeName().equals("src")
+								   && !includeNode.getNodeName().equals("misc"))
+									continue;
+						
 						if(includeNode.getNodeName().equals("include"))
 						{
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
+							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
 							inc = true;
-							String includePath = includeNode.getNodeValue();
-							includePath = Helpers.resolvePath(includePath);
+							String includePath = includeNode.getFirstChild().getNodeValue();
+							includePath = Helpers.resolvePath(mPwd.getAbsolutePath(), includePath);
 							imp.setInclude(includePath);
 						}
 						else if(includeNode.getNodeName().equals("src"))
 						{
-							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
+							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
+							if(includeNode.getFirstChild()==null) throw new XMLParseException("<src> element is empty");
 							src = true;
-							String srcPath = includeNode.getNodeValue();
-							srcPath = Helpers.resolvePath(srcPath);
+							String srcPath = includeNode.getFirstChild().getNodeValue();
+							srcPath = Helpers.resolvePath(mPwd.getAbsolutePath(), srcPath);
 							imp.setSrc(srcPath);
 							
 						}
 						else if(includeNode.getNodeName().equals("misc"))
 						{
-							String miscPath = includeNode.getNodeValue();
-							miscPath = Helpers.resolvePath(miscPath);
+							if(includeNode.getFirstChild()==null) throw new XMLParseException("<misc> element is empty");
+							String miscPath = includeNode.getFirstChild().getNodeValue();
+							miscPath = Helpers.resolvePath(mPwd.getAbsolutePath(), miscPath);
 							imp.addMisc(miscPath);
 						}
 						else
@@ -142,9 +148,9 @@ public class QSync
 	}
 	
 	
-	File getPWD()
+	public File getPWD()
 	{
-		return null;
+		return mPwd;
 	}
 	
 	public void debugPrint()
