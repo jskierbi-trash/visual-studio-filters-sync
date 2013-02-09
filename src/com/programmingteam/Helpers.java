@@ -20,6 +20,14 @@ public class Helpers
 		return null;
 	}
 	
+	public static boolean isAbsolute(String path)
+	{
+		if(path.length()>1 && path.charAt(1)==':')
+			return true;
+		else
+			return false;
+	}
+	
 	public static String getFileExt(String file)
 	{
 		int index = file.lastIndexOf('.');
@@ -34,9 +42,13 @@ public class Helpers
 	}
 	
 	/// \biref resolves path - resolves env vars and fixes slashes 
-	public static String resolvePath(String path)
+	public static String resolvePath(String basedir, String path)
 	{
-		return fixSlashes(resolveEnvVars(path));
+		String resolved = fixSlashes(resolveEnvVars(path));
+		if(isAbsolute(resolved))
+			return resolved;
+		else
+			return (basedir + File.separatorChar + resolved);
 	}
 	
 	
@@ -74,6 +86,12 @@ public class Helpers
 			{
 				String varToResolve = varBuff.toString();
 				String resolved = System.getenv(varToResolve);
+				if(resolved == null)
+				{
+					System.err.println("Could not resolve environment variable: ${" + varToResolve + "}");
+					System.exit(-1);
+				}
+				
 				outBuff.append(resolved);
 				flgStarted = false;
 				continue;
