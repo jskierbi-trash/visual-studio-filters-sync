@@ -51,7 +51,6 @@ public class Helpers
 			return (basedir + File.separatorChar + resolved);
 	}
 	
-	
 	public static String fixSlashes(String file)
 	{
 		String output = file.replace('/','\\');
@@ -111,5 +110,15 @@ public class Helpers
 		
 		output = outBuff.toString();
 		return output;
+	}
+
+	public static int countOccurances(String str, char what)
+	{
+		int occurances = 0;
+		for(int i=0; i<str.length(); ++i)
+		{
+			if(str.charAt(i)==what) ++occurances;
+		}
+		return occurances;
 	}
 }
