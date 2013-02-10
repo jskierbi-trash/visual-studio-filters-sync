@@ -2,7 +2,7 @@ package com.programmingteam;
 
 import java.io.File;
 
-import com.programmingteam.projects.QSync;
+import com.programmingteam.qsync.QSync;
 
 public class main
 {

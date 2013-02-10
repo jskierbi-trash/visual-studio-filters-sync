@@ -1,4 +1,4 @@
-package com.programmingteam.projects;
+package com.programmingteam.qsync;
 
 import java.io.File;
 import java.util.ArrayList;

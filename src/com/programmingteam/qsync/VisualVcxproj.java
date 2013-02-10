@@ -1,8 +1,11 @@
-package com.programmingteam.projects;
+package com.programmingteam.qsync;
 
 import java.io.File;
 
-public class Visual2010
+///
+/// \brief Visual 2010 project representation
+///
+public class VisualVcxproj
 {
 	
 	void readVcxproj()
