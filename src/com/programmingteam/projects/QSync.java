@@ -16,6 +16,10 @@ import org.xml.sax.SAXException;
 
 import com.programmingteam.Helpers;
 
+///
+/// \brief qsync XML file representation
+/// Contains of basic config (include ext, compile ext) and list of defined projects.
+///
 public class QSync
 {
 	private String mIncludes;
@@ -23,7 +27,14 @@ public class QSync
 	private File mPwd;
 	
 	private ArrayList<QSyncVcxproj> mProjects;
-	
+
+	///
+	/// \brief reads xml file (qsync format) and creates object hierarchy
+	/// In case of read or XML file format error, this method prints message
+	/// and make application exti with code -1
+	///
+	/// \param [in] qsyncfile 	path to file to read
+	///
 	public QSync(File qsyncfile)
 	{
 		Document qsyncDoc =null;
@@ -147,12 +158,19 @@ public class QSync
 		catch(XMLParseException ex) { System.err.println("XMLParseExcepiton: " + ex.getMessage()); System.exit(-1); }
 	}
 	
-	
+
+	///
+	/// \brief returns absolute path to dir containing loaded config file
+	/// \return File	absolute path to dir containing loaded config file
+	///
 	public File getPWD()
 	{
 		return mPwd;
 	}
 	
+	///
+	/// \brief Prints all data loaded from config 
+	///
 	public void debugPrint()
 	{
 		System.out.println("mIncludes: " + mIncludes);

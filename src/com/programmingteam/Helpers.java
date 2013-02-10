@@ -2,24 +2,39 @@ package com.programmingteam;
 
 import java.io.File;
 
+///
+/// \brief Set of helper methods, most of them is used to manipulate paths and filenames
+///
 public class Helpers
 {
+	///
+	/// \brief checks whether file should be placed in CiCompile region
+	/// \param String file to check
+	/// \param String compile file extensions to search
+	/// \return true if file is CiCompile
+	///
 	public static boolean isCompile(String file, String compileExt)
 	{
 		
 		return true;
 	}
 	
+	///
+	/// \brief checks whether file should be placed in CiInclude region
+	/// \param String file to check
+	/// \param String include file extensions to search in
+	/// \return true if file is CiInclude
+	///
 	public static boolean isInclude(String file, String incExt)
 	{
 		return false;
 	}
 	
-	public static String getRelativePath(File f, File relativeTo)
-	{
-		return null;
-	}
-	
+	///
+	/// \brief checks whether path is absolute or not (work only with windows)
+	/// \param String path to check
+	/// \return true if path is absolute
+	///
 	public static boolean isAbsolute(String path)
 	{
 		if(path.length()>1 && path.charAt(1)==':')
@@ -28,6 +43,11 @@ public class Helpers
 			return false;
 	}
 	
+	///
+	/// \brief returns file extension
+	/// \param String file
+	/// \reutrn String extension of file
+	///
 	public static String getFileExt(String file)
 	{
 		int index = file.lastIndexOf('.');
@@ -41,7 +61,17 @@ public class Helpers
 		}
 	}
 	
-	/// \biref resolves path - resolves env vars and fixes slashes 
+	///
+	/// \biref resolves path
+	/// There are three steps:
+	/// 	1. Resolve env vars (if certain var is not found in system, app exits)
+	///		2. Fix slashes (remove duplicates, convert to backslashes)
+	/// 	3. Check if file is absolute, if not, glue it with basedir
+	/// 
+	/// \param String basedif  	path to files basedir
+	/// \param String path 		path to be resolved
+	/// \return String resolved path (always absolute)
+	///
 	public static String resolvePath(String basedir, String path)
 	{
 		String resolved = fixSlashes(resolveEnvVars(path));
@@ -51,6 +81,11 @@ public class Helpers
 			return (basedir + File.separatorChar + resolved);
 	}
 	
+	///
+	/// \brief removes duplicate slashes, convert to backslashes
+	/// \param String path to fix
+	/// \return String fixed path
+	///
 	public static String fixSlashes(String file)
 	{
 		String output = file.replace('/','\\');
@@ -65,6 +100,12 @@ public class Helpers
 		return output;
 	}
 	
+	///
+	/// \brief resolves env variables
+	/// If variable is not found, exits with code -1
+	/// \param String path to resolve
+	/// \return String resolved path
+	///
 	public static String resolveEnvVars(String file)
 	{
 		StringBuffer varBuff = null;
@@ -112,6 +153,12 @@ public class Helpers
 		return output;
 	}
 
+	///
+	/// \brief count occurances of char in string
+	/// \param String 	to search in
+	/// \param char 	to search for
+	/// \return int number of occurances
+	///
 	public static int countOccurances(String str, char what)
 	{
 		int occurances = 0;
