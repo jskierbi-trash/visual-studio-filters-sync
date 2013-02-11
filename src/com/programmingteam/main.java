@@ -24,17 +24,4 @@ public class main
 			System.err.println("App does not have any UI...");
 		}
 	}
-	
-	public static void test()
-	{
-		System.out.println("Hello World!");
-		
-		String s = "${BOX2D_3DS_DIR}/include/";
-		s = Helpers.resolveEnvVars(s);
-		s = Helpers.fixSlashes(s);
-		System.out.println("Fixed: " + s);
-		
-		String file = "${BOX2D_3DS_DIR}/include/a.cpp";
-		System.out.println("Extension: " + Helpers.getFileExt(file));
-	}
 }
