@@ -80,8 +80,10 @@ public class QSync
 			mProjects = new ArrayList<QSyncVcxproj>();
 			NodeList vcxprojList = qsyncDoc.getElementsByTagName("vcxproj");
 			if(vcxprojList.getLength() == 0) throw new XMLParseException("no <vcxproj> elements found");
-			for(int i=0; i<vcxprojList.getLength(); ++i)
+			System.out.println("vcxproj length: " + vcxprojList.getLength());
+			for(int i=vcxprojList.getLength()-1; i>=0; --i)
 			{
+				System.out.println("Project!");
 				Node projNode = vcxprojList.item(i);
 				Element projElem = (Element) qsyncDoc.adoptNode(projNode);
 				String projFile = projElem.getAttribute("proj");
@@ -93,7 +95,7 @@ public class QSync
 				QSyncVcxproj proj = new QSyncVcxproj(projFile, projFile + ".filters");
 				NodeList importList = projNode.getChildNodes();
 				if(importList.getLength() == 0) throw new XMLParseException("no <import> element defined for " + projFile);
-				for(int j=0; j<importList.getLength(); ++j)
+				for(int j= importList.getLength()-1; j>=0; --j)
 				{
 					Node importNode = importList.item(j);
 					if(!importNode.getNodeName().equals("import")) continue;
@@ -110,7 +112,7 @@ public class QSync
 						throw new XMLParseException("<import> is empty (with tofilter="+toFilter+")");
 					
 					boolean src=false, inc=false;
-					for(int n=0; n<importIncludesList.getLength(); ++n)
+					for(int n=importIncludesList.getLength()-1; n>=0; --n)
 					{
 						Node includeNode = importIncludesList.item(n);
 						if(!includeNode.getNodeName().equals("include")
@@ -135,7 +137,6 @@ public class QSync
 							String srcPath = includeNode.getFirstChild().getNodeValue();
 							srcPath = Helpers.resolvePath(mPwd.getAbsolutePath(), srcPath);
 							imp.setSrc(srcPath);
-							
 						}
 						else if(includeNode.getNodeName().equals("misc"))
 						{
@@ -153,12 +154,10 @@ public class QSync
 				}
 				mProjects.add(proj);
 			}
-			
 		}
 		catch(XMLParseException ex) { System.err.println("XMLParseExcepiton: " + ex.getMessage()); System.exit(-1); }
 	}
 	
-
 	///
 	/// \brief returns absolute path to dir containing loaded config file
 	/// \return File	absolute path to dir containing loaded config file
