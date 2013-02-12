@@ -166,6 +166,15 @@ public class QSync
 	{
 		return mPwd;
 	}
+
+	///
+	/// \brief returns list of projects from config file
+	/// \return list of projects
+	///
+	public ArrayList<QSyncVcxproj> getProjects()
+	{
+		return mProjects;
+	}
 	
 	///
 	/// \brief Prints all data loaded from config 

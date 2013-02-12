@@ -1,8 +1,11 @@
 package com.programmingteam;
 
 import java.io.File;
+import java.util.List;
 
 import com.programmingteam.qsync.QSync;
+import com.programmingteam.qsync.QSyncVcxproj;
+import com.programmingteam.qsync.VisualVcxproj;
 
 public class main
 {
@@ -17,6 +20,13 @@ public class main
 			QSync syncFiles = new QSync(qsyncFile);
 			syncFiles.debugPrint();
 			System.out.println("Qsyn created ok.");
+			
+			List<QSyncVcxproj> projs = syncFiles.getProjects();
+			for(QSyncVcxproj p : projs)
+			{
+				VisualVcxproj proj = new VisualVcxproj(p.getVcxproj(), p.getVcxprojFilters());
+				proj.debugPrint();
+			}
 		}
 		else
 		{
