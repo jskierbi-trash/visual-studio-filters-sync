@@ -19,7 +19,8 @@ public class QSyncImport
 	private String mInclude;
 	private String mSrc;
 	
-	private String mRegexp;
+	private String mRegexpInclude;
+	private String mRegexpSrc;
 	
 	private List<String> mMisc;
 	
@@ -49,13 +50,24 @@ public class QSyncImport
 		this.mSrc = src;
 	}
 	
-	public void setRegexp(String regexp)
+	public void setRegexpInclude(String regexp)
 	{
-		mRegexp = regexp;
-		try { Pattern.compile(mRegexp); }
+		mRegexpInclude = regexp;
+		try { Pattern.compile(mRegexpInclude); }
 		catch (PatternSyntaxException e) 
 		{  
-			System.err.println("Error parsing regular expression (" + mRegexp + ") " + e.getMessage());
+			System.err.println("Error parsing regular expression (" + mRegexpInclude + ") " + e.getMessage());
+			System.exit(-1);
+		}
+	}
+	
+	public void setRegexpSrc(String regexp)
+	{
+		mRegexpSrc = regexp;
+		try { Pattern.compile(mRegexpSrc); }
+		catch (PatternSyntaxException e) 
+		{  
+			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
 			System.exit(-1);
 		}
 	}
@@ -86,10 +98,16 @@ public class QSyncImport
 		return mInclude;
 	}
 	
-	public boolean isIncluded(String file)
+	public boolean matchesInclue(String file)
 	{
-		if(mRegexp==null) return true;
-		return file.matches(mRegexp);
+		if(mRegexpInclude==null) return true;
+		return file.matches(mRegexpInclude);
+	}
+	
+	public boolean matchesSrc(String file)
+	{
+		if(mRegexpSrc==null) return true;
+		return file.matches(mRegexpSrc);
 	}
 
 	///
