@@ -62,6 +62,17 @@ public class Helpers
 	}
 	
 	///
+	/// \brief returns path part of file
+	/// 
+	public static String getPath(String file)
+	{
+		int i;
+		if( (i=file.lastIndexOf("\\")) >1 )
+			return file.substring(0,  i+1);
+		else return null;
+	}
+	
+	///
 	/// \biref resolves path
 	/// There are three steps:
 	/// 	1. Resolve env vars (if certain var is not found in system, app exits)
