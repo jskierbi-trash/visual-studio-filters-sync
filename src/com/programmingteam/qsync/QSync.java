@@ -121,6 +121,10 @@ public class QSync
 								   && !includeNode.getNodeName().equals("misc"))
 									continue;
 						
+						//Regexp
+						if(includeNode.getAttributes().getNamedItem("regexp")!=null)
+							imp.setRegexp(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
+						
 						if(includeNode.getNodeName().equals("include"))
 						{
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");

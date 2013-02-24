@@ -2,6 +2,8 @@ package com.programmingteam.qsync;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 ///
 /// \brief representation of single import to vcxproj/filters files
@@ -16,6 +18,9 @@ public class QSyncImport
 	private String mToFilter;
 	private String mInclude;
 	private String mSrc;
+	
+	private String mRegexp;
+	
 	private List<String> mMisc;
 	
 	///
@@ -43,6 +48,17 @@ public class QSyncImport
 	{
 		this.mSrc = src;
 	}
+	
+	public void setRegexp(String regexp)
+	{
+		mRegexp = regexp;
+		try { Pattern.compile(mRegexp); }
+		catch (PatternSyntaxException e) 
+		{  
+			System.err.println("Error parsing regular expression (" + mRegexp + ") " + e.getMessage());
+			System.exit(-1);
+		}
+	}
 
 	///
 	/// \biref sets absolute path to misc folder
@@ -68,6 +84,12 @@ public class QSyncImport
 	public String getInclude()
 	{
 		return mInclude;
+	}
+	
+	public boolean isIncluded(String file)
+	{
+		if(mRegexp==null) return true;
+		return file.matches(mRegexp);
 	}
 
 	///
