@@ -112,6 +112,23 @@ public class Helpers
 	}
 	
 	///
+	/// \brief removes slashes at begining and at the end of string
+	/// \param String to parse
+	/// \return stripped string
+	///
+	public static String stripSlashes(String file)
+	{
+		String output = file;
+		while(output.charAt(0)=='\\')
+			output = output.substring(1, output.length());
+		
+		while(output.charAt(output.length()-1)=='\\')
+			output = output.substring(0, output.length()-1);
+		
+		return output;
+	}
+	
+	///
 	/// \brief resolves env variables
 	/// If variable is not found, exits with code -1
 	/// \param String path to resolve
