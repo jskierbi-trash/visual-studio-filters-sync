@@ -66,6 +66,27 @@ public class VcxprojClItem
 		return mFileRelativePath;
 	}
 	
+	public void setRelativePath(String path)
+	{
+		mFileRelativePath = path;
+	}
+	
+	public void setFilter(String filter)
+	{
+		System.out.println("Setting filter");
+		for(int i=0; i<mFilterLines.size(); ++i)
+		{
+			String s = mFilterLines.get(i);
+			if(s.matches(".*<Filter>.*"))
+			{
+				s = s.substring(0, s.indexOf('>')+1);
+				s = s + filter + "</Filter>";
+				mFilterLines.set(i, s);
+				return;
+			}
+		}
+	}
+	
 	public void setDeleted(boolean flgDeleted)
 	{
 		this.mFlgDeleted = flgDeleted;

@@ -14,7 +14,7 @@ public class Helpers
 	/// \return true if file is CiCompile
 	///
 	public static boolean isCompile(File file, String compileExt)
-	{ 
+	{
 		String ext = getFileExt(file.getAbsolutePath());
 		if( compileExt.matches("(^|.*,)"+ext+"(,.*|$)"))
 			return true;
@@ -202,5 +202,15 @@ public class Helpers
 			if(str.charAt(i)==what) ++occurances;
 		}
 		return occurances;
+	}
+	
+	public static boolean compFiles(String file1, String file2)
+	{
+		File f1 = new File(file1);
+		File f2 = new File(file2);
+		if(f1.getName()==null || f2.getName()==null) 
+			return false;
+		else
+			return f1.getName().equals(f2.getName());
 	}
 }

@@ -241,22 +241,64 @@ public class VcxprojSync
 	
 	public void syncFile(String relativeFile, String filter, SyncType type)
 	{
-		if(SyncType.COMPILE == type)
+		this.syncFilter(filter);
+		
+		if(SyncType.COMPILE==type && !mClCompileItems.containsKey(relativeFile))
 		{
-			if(!mClCompileItems.containsKey(relativeFile))
-				System.out.println("Found non-existing COMPILE file! " + relativeFile);
+			System.out.println("Adding file: " + relativeFile);
+			detectFileMove(relativeFile, filter, mClCompileItems);
+		}
+		
+		if(SyncType.INCLUDE==type && !mClIncludeItems.containsKey(relativeFile))
+		{
+			System.out.println("Adding file: " + relativeFile);
+			detectFileMove(relativeFile, filter, mClIncludeItems);
 		}
 	}
 	
+	private boolean detectFileMove(String file, String filter, HashMap<String, VcxprojClItem> container)
+	{
+		VcxprojClItem movedItem =null;
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+		{
+			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
+			{
+				if(movedItem!=null)
+				{
+					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
+					System.err.println("\tConflict: ["+movedItem.getFilePath()+"] and ["+file+"]");
+					System.exit(-1);
+				}
+				
+				movedItem = i.getValue();
+				movedItem.setRelativePath(file);
+				movedItem.setFilter(filter);
+				System.out.println("Found FILE MOVE!");
+			}
+		}
+		
+		return movedItem!=null;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	public void syncFilter(String filter)
+	{
+		String sliceFilter = filter;
+		int slashIndex;
+		do
+		{
+			if(!mFilters.contains(sliceFilter))
+			{
+				System.out.println("Filter added: " + sliceFilter);
+				mFilters.add(sliceFilter);
+			}
+			
+			slashIndex = sliceFilter.lastIndexOf('\\');
+			if(slashIndex>0)
+				sliceFilter = sliceFilter.substring(0, slashIndex);
+		}
+		while( slashIndex >0 );
+	}
+
 	public void debugPrint()
 	{
 		System.out.println(">>> VCX HEADER <<<");
@@ -282,7 +324,7 @@ public class VcxprojSync
 		
 		System.out.println("");
 		System.out.println("ClCompiles:");
-		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
 		
 	}
 }

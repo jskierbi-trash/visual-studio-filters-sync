@@ -40,7 +40,16 @@ public class Main
 						for(int i=0; i<listFiles.length; ++i)
 						{
 							if(listFiles[i].isDirectory())
+							{
 								dirList.add(listFiles[i]);
+								String toFilter = listFiles[i].getAbsolutePath()
+										.replace(imp.getInclude(), imp.getToFilter())
+										.replace(imp.getSrc(), imp.getToFilter());
+
+								toFilter = Helpers.stripSlashes(toFilter);
+								
+								vcxprojSync.syncFilter(toFilter);
+							}
 							else
 							{
 								//TODO add handling misc
@@ -78,6 +87,8 @@ public class Main
 					System.out.println("include: " + imp.getInclude());
 					System.out.println("src: " + imp.getSrc());
 				}
+
+				vcxprojSync.debugPrint();
 			}
 		}
 		else
