@@ -97,6 +97,15 @@ public class QSyncVcxproj
 	}
 	
 	///
+	/// \brief returns list of QSyncImports
+	/// \return list of QSyncImports
+	///
+	public ArrayList<QSyncImport> getImportList()
+	{
+		return mImportList;
+	}
+	
+	///
 	/// \brief prints all data contained in this object
 	///
 	public void debugPrint()
