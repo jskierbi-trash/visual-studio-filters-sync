@@ -2,7 +2,7 @@ package com.programmingteam.vs2010;
 
 import java.util.ArrayList;
 
-public class ClItem
+public class VcxprojClItem
 {
 	ArrayList<String> mFilterLines;
 	ArrayList<String> mProjLines;
@@ -13,7 +13,7 @@ public class ClItem
 	
 	enum Ctx { PROJ, FILTER }
 	
-	public ClItem()
+	public VcxprojClItem()
 	{
 		mFlgDeleted = false;
 		mProjLines = new ArrayList<String>();

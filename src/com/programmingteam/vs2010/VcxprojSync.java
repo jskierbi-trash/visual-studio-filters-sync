@@ -16,7 +16,7 @@ import com.programmingteam.Helpers;
 ///
 /// \brief Visual 2010 project representation
 ///
-public class VisualVcxproj
+public class VcxprojSync
 {
 	private File mProjFile;
 	private File mFilterFile;
@@ -31,12 +31,12 @@ public class VisualVcxproj
 	private HashSet<String> mFilters;
 
 	///Shared items
-	private HashMap<String, ClItem> mClIncludeItems;
-	private HashMap<String, ClItem> mClCompileItems;
+	private HashMap<String, VcxprojClItem> mClIncludeItems;
+	private HashMap<String, VcxprojClItem> mClCompileItems;
 	
 	private enum ParseContext { HEADER, FILTER, INCLUDE, COMPILE, FOOTER }
 	
-	public VisualVcxproj(String vcxproj, String vcxprojFilters)
+	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
 		mProjFile = new File(vcxproj);
 		mFilterFile = new File(vcxprojFilters);
@@ -47,8 +47,8 @@ public class VisualVcxproj
 		mFilterHeader = new ArrayList<String>();
 		mFilterFooter = new ArrayList<String>();
 		
-		mClIncludeItems = new HashMap<String, ClItem>();
-		mClCompileItems = new HashMap<String, ClItem>();
+		mClIncludeItems = new HashMap<String, VcxprojClItem>();
+		mClCompileItems = new HashMap<String, VcxprojClItem>();
 		mFilters = new HashSet<String>();
 
 		parseVcxproj();
@@ -64,7 +64,7 @@ public class VisualVcxproj
 			in = new BufferedReader(new FileReader(mProjFile));
 			ParseContext context = ParseContext.HEADER;
 			String line, contextLine;
-			ClItem item = new ClItem();
+			VcxprojClItem item = new VcxprojClItem();
 			int lineCount = 0;
 			while((line=in.readLine())!=null)
 			{
@@ -113,7 +113,7 @@ public class VisualVcxproj
 					if(item.addProjLine(line)) //is element closed?
 					{
 						mClCompileItems.put(item.getFilePath(), item);
-						item = new ClItem();
+						item = new VcxprojClItem();
 					}
 				}
 				else if(ParseContext.INCLUDE==context)
@@ -121,7 +121,7 @@ public class VisualVcxproj
 					if(item.addProjLine(line))
 					{
 						mClIncludeItems.put(item.getFilePath(), item);
-						item = new ClItem();
+						item = new VcxprojClItem();
 					}
 				}
 			}
@@ -141,7 +141,7 @@ public class VisualVcxproj
 			in = new BufferedReader(new FileReader(mFilterFile));
 			ParseContext context = ParseContext.HEADER;
 			String line, contextLine;
-			ClItem item = null;
+			VcxprojClItem item = null;
 			int lineCount = 0;
 			while((line=in.readLine())!=null)
 			{
@@ -237,7 +237,7 @@ public class VisualVcxproj
 		final String basePath = Helpers.getPath(mProjFile.getAbsolutePath());
 //		System.out.println("BasePath: " + basePath);
 		
-		for(Entry<String, ClItem> i: mClIncludeItems.entrySet())
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
 		{
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
@@ -247,7 +247,7 @@ public class VisualVcxproj
 			}
 		}
 		
-		for(Entry<String, ClItem> i: mClCompileItems.entrySet())
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
 		{
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
@@ -256,11 +256,6 @@ public class VisualVcxproj
 				i.getValue().setDeleted(true);
 			}
 		}
-	}
-	
-	private void updateFile(String relativePath, String filter)
-	{
-		//Check, if file exists or if it was deleted
 	}
 	
 	public void debugPrint()
@@ -284,11 +279,11 @@ public class VisualVcxproj
 		
 		System.out.println("");
 		System.out.println("ClIncludes:");
-		for(Entry<String, ClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
 		
 		System.out.println("");
 		System.out.println("ClCompiles:");
-		for(Entry<String, ClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
 		
 	}
 }
