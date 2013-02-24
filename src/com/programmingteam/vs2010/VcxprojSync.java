@@ -258,6 +258,22 @@ public class VcxprojSync
 		}
 	}
 	
+	public void syncFile(String relativeFile, String filter)
+	{
+		System.out.println("Sync file: " + relativeFile + " (filter: " + filter + ")");
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public void debugPrint()
 	{
 		System.out.println(">>> VCX HEADER <<<");
