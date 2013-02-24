@@ -4,16 +4,16 @@ import java.io.File;
 import java.util.List;
 
 import com.programmingteam.qsync.QSync;
+import com.programmingteam.qsync.QSyncImport;
 import com.programmingteam.qsync.QSyncVcxproj;
 import com.programmingteam.vs2010.VisualVcxproj;
 
 public class Main
 {
 	public static void main(String[] args)
-	{
-		//test();
-		
+	{		
 		File qsyncFile = new File(args[0]);
+		
 		if(args.length==1 && qsyncFile.exists())
 		{
 			//Read file
@@ -25,7 +25,12 @@ public class Main
 			for(QSyncVcxproj p : projs)
 			{
 				VisualVcxproj proj = new VisualVcxproj(p.getVcxproj(), p.getVcxprojFilters());
-				proj.debugPrint();
+				for(QSyncImport imp: p.getImportList())
+				{
+					System.out.println("To Filter: " + imp.getToFilter());
+					System.out.println("include: " + imp.getInclude());
+					System.out.println("src: " + imp.getSrc());
+				}
 			}
 		}
 		else

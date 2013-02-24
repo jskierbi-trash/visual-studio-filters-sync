@@ -102,6 +102,7 @@ public class QSync
 
 					String toFilter = importNode.getAttributes().getNamedItem("tofilter").getNodeValue();
 					toFilter = Helpers.fixSlashes(toFilter);
+					toFilter = Helpers.stripSlashes(toFilter);
 					if(toFilter.length()==0 || !toFilter.matches("[a-zA-Z0-9 ]*(\\\\[a-zA-Z0-9 ]*)*"))
 						throw new XMLParseException("tofilter attribute of <import> is not valid");
 					
