@@ -121,12 +121,11 @@ public class QSync
 								   && !includeNode.getNodeName().equals("misc"))
 									continue;
 						
-						//Regexp
-						if(includeNode.getAttributes().getNamedItem("regexp")!=null)
-							imp.setRegexp(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
-						
 						if(includeNode.getNodeName().equals("include"))
 						{
+							if(includeNode.getAttributes().getNamedItem("regexp")!=null)
+								imp.setRegexpInclude(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
+							
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
 							inc = true;
@@ -136,6 +135,9 @@ public class QSync
 						}
 						else if(includeNode.getNodeName().equals("src"))
 						{
+							if(includeNode.getAttributes().getNamedItem("regexp")!=null)
+								imp.setRegexpSrc(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
+							
 							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<src> element is empty");
 							src = true;
@@ -145,6 +147,8 @@ public class QSync
 						}
 						else if(includeNode.getNodeName().equals("misc"))
 						{
+							// TODO set regexp
+							
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<misc> element is empty");
 							String miscPath = includeNode.getFirstChild().getNodeValue();
 							miscPath = Helpers.resolvePath(mPwd.getAbsolutePath(), miscPath);
