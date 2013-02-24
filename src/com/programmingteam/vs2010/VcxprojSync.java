@@ -78,15 +78,9 @@ public class VcxprojSync
 					if(line!=null)
 					{
 						if(line.matches(".*<ClInclude .*"))
-						{
 							context = ParseContext.INCLUDE;
-							System.out.println("*** Context: ClInclude");
-						}
 						else if(line.matches(".*<ClCompile .*"))
-						{
 							context = ParseContext.COMPILE;
-							System.out.println("*** Context: ClCompile");
-						}
 						else
 						{
 							if(ParseContext.INCLUDE==context || ParseContext.COMPILE==context)
@@ -98,8 +92,6 @@ public class VcxprojSync
 							{
 								mVcxHeader.add(contextLine);
 							}
-							
-							System.out.println("*** No context change");
 						}
 					}
 					else
@@ -155,20 +147,11 @@ public class VcxprojSync
 					if(line!=null)
 					{
 						if(line.matches(".*<ClInclude .*"))
-						{
 							context = ParseContext.INCLUDE;
-							System.out.println("*** Context: ClInclude");
-						}
 						else if(line.matches(".*<ClCompile .*"))
-						{
 							context = ParseContext.COMPILE;
-							System.out.println("*** Context: ClCompile");
-						}
 						else if(line.matches(".*<Filter.*"))
-						{
 							context = ParseContext.FILTER;
-							System.out.println("*** Context: Filter");
-						}
 						else
 						{
 							if(ParseContext.INCLUDE==context || ParseContext.COMPILE==context)
@@ -180,8 +163,6 @@ public class VcxprojSync
 							{
 								mFilterHeader.add(contextLine);
 							}
-							
-							System.out.println("*** No context change");
 						}
 					}
 					else
@@ -260,12 +241,10 @@ public class VcxprojSync
 	
 	public void syncFile(String relativeFile, String filter, SyncType type)
 	{
-		System.out.println("Sync "+type+": " + relativeFile + " (filter: " + filter + ")");
-		
 		if(SyncType.COMPILE == type)
 		{
 			if(!mClCompileItems.containsKey(relativeFile))
-				System.out.println("\tFound non-existing COMPILE file!");
+				System.out.println("Found non-existing COMPILE file! " + relativeFile);
 		}
 	}
 	
