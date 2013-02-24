@@ -11,29 +11,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import com.programmingteam.Helpers;
+
 ///
 /// \brief Visual 2010 project representation
 ///
 public class VisualVcxproj
 {
-
-	////VCX project structure
+	private File mProjFile;
+	private File mFilterFile;
+	
+	////vcxproj structure
 	private ArrayList<String> mVcxHeader;
 	private ArrayList<String> mVcxFooter;
 	
+	///vcxproj.filters structure
 	private ArrayList<String> mFilterHeader;
 	private ArrayList<String> mFilterFooter;
-	
+	private HashSet<String> mFilters;
 
 	///Shared items
 	private HashMap<String, ClItem> mClIncludeItems;
 	private HashMap<String, ClItem> mClCompileItems;
-	private HashSet<String> mFilters;
 	
 	private enum ParseContext { HEADER, FILTER, INCLUDE, COMPILE, FOOTER }
-	
-	File mProjFile;
-	File mFilterFile;
 	
 	public VisualVcxproj(String vcxproj, String vcxprojFilters)
 	{		
@@ -50,6 +51,13 @@ public class VisualVcxproj
 		mClCompileItems = new HashMap<String, ClItem>();
 		mFilters = new HashSet<String>();
 
+		parseVcxproj();
+		parseFilters();
+		markDeletedFiles();
+	}
+
+	private void parseVcxproj()
+	{
 		BufferedReader in =null;
 		try //Load *.vcxproj
 		{
@@ -119,13 +127,15 @@ public class VisualVcxproj
 			}
 		}
 		catch (ParseException e) { System.err.println("Parse excepiton: " + e.getMessage()); System.exit(-1); }
-		catch (FileNotFoundException e) { System.err.println("File not found: " + vcxproj); System.exit(-1); }
-		catch (IOException e) { System.err.println("IOException reading file: " + vcxproj); System.exit(-1); }
+		catch (FileNotFoundException e) { System.err.println("File not found: " + mProjFile); System.exit(-1); }
+		catch (IOException e) { System.err.println("IOException reading file: " + mProjFile); System.exit(-1); }
 		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
 		
-		System.out.println(">>> Filters...");
-		
-		in =null;
+	}
+	
+	private void parseFilters()
+	{
+		BufferedReader in =null;
 		try //Load *.vcxproj.filters
 		{
 			in = new BufferedReader(new FileReader(mFilterFile));
@@ -216,34 +226,41 @@ public class VisualVcxproj
 			}
 		}
 		catch (ParseException e) { System.err.println("Parse excepiton: " + e.getMessage()); System.exit(-1); }
-		catch (FileNotFoundException ex) { System.err.println("File not found: " + vcxproj); System.exit(-1); }
-		catch (IOException ex) { System.err.println("IOException reading file: " + vcxproj); System.exit(-1); }
+		catch (FileNotFoundException ex) { System.err.println("File not found: " + mFilterFile); System.exit(-1); }
+		catch (IOException ex) { System.err.println("IOException reading file: " + mFilterFile); System.exit(-1); }
 		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
 	}
-
-	void addFile(File f, boolean flgIsHeader)
+	
+	private void markDeletedFiles()
 	{
-		//Add file to sources/headers list
+		/// Get project file dir!
+		final String basePath = Helpers.getPath(mProjFile.getAbsolutePath());
+//		System.out.println("BasePath: " + basePath);
+		
+		for(Entry<String, ClItem> i: mClIncludeItems.entrySet())
+		{
+			File f = new File(basePath + i.getKey());
+			if(!f.exists())
+			{
+				System.out.println("File not exists: " + f);
+				i.getValue().setDeleted(true);
+			}
+		}
+		
+		for(Entry<String, ClItem> i: mClCompileItems.entrySet())
+		{
+			File f = new File(basePath + i.getKey());
+			if(!f.exists())
+			{
+				System.out.println("File not exists: " + f);
+				i.getValue().setDeleted(true);
+			}
+		}
 	}
 	
-	void deleteFile(File f, boolean flgIsHeader)
+	private void updateFile(String relativePath, String filter)
 	{
-		//Delete file from project/filters
-	}
-	
-	void cleanFilters(String filterRoot)
-	{
-		//Clean filters
-	}
-	
-	void updateFilter(File f)
-	{
-		//Make sure that filter exists
-	}
-	
-	void moveFile(File oldFile, File newFile)
-	{
-		//Moves file in structure (1. find old file, 2. change location to new)
+		//Check, if file exists or if it was deleted
 	}
 	
 	public void debugPrint()

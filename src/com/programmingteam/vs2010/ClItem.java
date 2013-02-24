@@ -66,6 +66,16 @@ public class ClItem
 		return mFileRelativePath;
 	}
 	
+	public void setDeleted(boolean flgDeleted)
+	{
+		this.mFlgDeleted = flgDeleted;
+	}
+	
+	public boolean getDeleted()
+	{
+		return mFlgDeleted;
+	}
+	
 	public void debugPrint()
 	{
 		System.out.println("  <ClInclude Include=\""+ mFileRelativePath +"\">");
