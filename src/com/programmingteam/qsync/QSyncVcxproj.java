@@ -75,7 +75,7 @@ public class QSyncVcxproj
 	/// \param[in] File absolute path to file to which relative path should be generated
 	/// \returns File relative path to file from vcxproj folder
 	///
-	public File getRelativeFile(File inFile)
+	public String getRelativeFile(File inFile)
 	{
 		String input = inFile.getAbsolutePath();
 		String proj =  mVcxproj;
@@ -93,7 +93,7 @@ public class QSyncVcxproj
 			buff.append("..\\");
 		}
 		buff.append(input.substring(offset, input.length()));
-		return new File(buff.toString());
+		return buff.toString();
 	}
 	
 	///
