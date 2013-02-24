@@ -177,6 +177,16 @@ public class QSync
 		return mProjects;
 	}
 	
+	public String getIncludeExt()
+	{
+		return mIncludes;
+	}
+	
+	public String getCompileExt()
+	{
+		return mCompiles;
+	}
+	
 	///
 	/// \brief Prints all data loaded from config 
 	///
