@@ -1,13 +1,16 @@
 package com.programmingteam.vs2010;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.programmingteam.Helpers;
@@ -77,9 +80,15 @@ public class VcxprojSync
 					if(line!=null)
 					{
 						if(line.matches(".*<ClInclude .*"))
+						{
+							item = new VcxprojClItem();
 							context = ParseContext.INCLUDE;
+						}
 						else if(line.matches(".*<ClCompile .*"))
+						{
+							item = new VcxprojClItem();
 							context = ParseContext.COMPILE;
+						}
 						else
 						{
 							if(ParseContext.INCLUDE==context || ParseContext.COMPILE==context)
@@ -139,17 +148,21 @@ public class VcxprojSync
 			while((line=in.readLine())!=null)
 			{
 				++lineCount;
+				
 				if(line.matches(".*<ItemGroup.*")) //Start context
 				{
 					contextLine = line;
 					line = in.readLine();
+					if(line.matches(".*CW\\\\Config\\.h.*"))
+						System.out.println("asdf");
+					
 					if(line!=null)
 					{
 						if(line.matches(".*<ClInclude .*"))
 							context = ParseContext.INCLUDE;
 						else if(line.matches(".*<ClCompile .*"))
 							context = ParseContext.COMPILE;
-						else if(line.matches(".*<Filter.*"))
+						else if(line.matches(".*<Filter Include=.*"))
 							context = ParseContext.FILTER;
 						else
 						{
@@ -178,7 +191,7 @@ public class VcxprojSync
 						mFilters.put(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")), false);
 				}
 				else if(ParseContext.COMPILE==context && !line.matches(".*</ItemGroup>.*"))
-				{
+				{					
 					if(item==null) //find item
 					{
 						item = mClCompileItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
@@ -192,7 +205,7 @@ public class VcxprojSync
 						item = null;
 				}
 				else if(ParseContext.INCLUDE==context && !line.matches(".*</ItemGroup>.*"))
-				{
+				{					
 					if(item==null) //find item
 					{
 						item = mClIncludeItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
@@ -313,6 +326,186 @@ public class VcxprojSync
 		while( slashIndex >0 );
 	}
 
+	public void saveVcxproj()
+	{
+		try
+		{
+			File outFile = new File(mProjFile + "-qsync.vcxproj");
+			if(!outFile.exists()) outFile.createNewFile();
+			
+			// HEADER ///////
+			BufferedWriter out = new BufferedWriter(new FileWriter(outFile.getAbsolutePath()));
+			for(String s: mVcxHeader)
+			{
+				out.write(s);
+				out.newLine();
+			}
+			
+			// INCLUDES //////
+			out.write("  <ItemGroup>");
+			out.newLine();
+			for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+			{
+				if(i.getValue().getDeleted()) continue;
+				
+				List<String> projLines = i.getValue().getProjLines();
+				if(projLines==null || projLines.size()==0)
+				{
+					 out.write("    <ClInclude Include=\""+i.getKey()+"\" />");
+					 out.newLine();
+				}
+				else
+				{
+					out.write("    <ClInclude Include=\""+i.getKey()+"\">");
+					out.newLine();
+					for(String s: projLines)
+					{
+						out.write(s);
+						out.newLine();
+					}
+					out.write("    </ClInclude>");
+					out.newLine();
+				}
+			}
+			out.write("  </ItemGroup>");
+			out.newLine();
+			
+			// COMPILES //////
+			out.write("  <ItemGroup>");
+			out.newLine();
+			for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
+			{
+				if(i.getValue().getDeleted()) continue;
+				
+				List<String> projLines = i.getValue().getProjLines();
+				if(projLines==null || projLines.size()==0)
+				{
+					 out.write("    <ClCompile Include=\""+i.getKey()+"\" />");
+					 out.newLine();
+				}
+				else
+				{
+					out.write("    <ClCompile Include=\""+i.getKey()+"\">");
+					out.newLine();
+					for(String s: projLines)
+					{
+						out.write(s);
+						out.newLine();
+					}
+					out.write("    </ClCompile>");
+					out.newLine();
+				}
+			}
+			out.write("  </ItemGroup>");
+			out.newLine();
+			
+			// FOOTER ///////
+			for(String s: mVcxFooter)
+			{
+				out.write(s);
+				out.newLine();
+			}
+			
+			out.close();
+		}
+		catch (IOException e)
+		{
+			System.err.println("IOException while saving file! (" + e.getMessage() + ")");
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveVcxprojFilters()
+	{
+		try
+		{
+			File outFile = new File(mProjFile + "-qsync.vcxproj.filters");
+			if(!outFile.exists()) outFile.createNewFile();
+			
+			// HEADER ///////
+			BufferedWriter out = new BufferedWriter(new FileWriter(outFile.getAbsolutePath()));
+			for(String s: mFilterHeader)
+			{
+				out.write(s);
+				out.newLine();
+			}
+			
+			// Filters //////
+			out.write("  <ItemGroup>");
+			out.newLine();
+			for(Entry<String, Boolean> i: mFilters.entrySet())
+			{
+				if(i.getValue())
+				{
+					out.write("    <Filter Include=\"" + i.getKey() + "\">");
+					out.newLine();
+					out.write("      <UniqueIdentifier></UniqueIdentifier>");
+					out.newLine();
+					out.write("    </Filter>");
+					out.newLine();
+				}
+			}
+			out.write("  </ItemGroup>");
+			out.newLine();
+			
+			// Includes //////
+			out.write("  <ItemGroup>");
+			out.newLine();
+			for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+			{
+				if(i.getValue().getDeleted()) continue;
+				
+				List<String> filterLines = i.getValue().getFilterLines();
+				out.write("    <ClInclude Include=\""+i.getKey()+"\">");
+				out.newLine();
+				for(String s: filterLines)
+				{
+					out.write(s);
+					out.newLine();
+				}
+				out.write("    </ClInclude>");
+				out.newLine();
+			}
+			out.write("  </ItemGroup>");
+			out.newLine();
+			
+			// Includes //////
+			out.write("  <ItemGroup>");
+			out.newLine();
+			for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
+			{
+				if(i.getValue().getDeleted()) continue;
+				
+				List<String> filterLines = i.getValue().getFilterLines();
+				out.write("    <ClCompile Include=\""+i.getKey()+"\">");
+				out.newLine();
+				for(String s: filterLines)
+				{
+					out.write(s);
+					out.newLine();
+				}
+				out.write("    </ClCompile>");
+				out.newLine();
+			}
+			out.write("  </ItemGroup>");
+			out.newLine();
+			
+			// FOOTER ///////
+			for(String s: mFilterFooter)
+			{
+				out.write(s);
+				out.newLine();
+			}
+			
+			out.close();
+		}
+		catch (IOException e)
+		{
+			System.err.println("IOException while saving file! (" + e.getMessage() + ")");
+			e.printStackTrace();
+		}
+	}
+	
 	public void debugPrint()
 	{
 		System.out.println(">>> VCX HEADER <<<");

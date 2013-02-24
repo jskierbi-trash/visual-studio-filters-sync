@@ -1,6 +1,7 @@
 package com.programmingteam.vs2010;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VcxprojClItem
 {
@@ -73,6 +74,9 @@ public class VcxprojClItem
 	
 	public void setFilter(String filter)
 	{
+		if(mFileRelativePath!=null && mFileRelativePath.matches(".*CW\\\\Config.*"))
+			System.out.println("ABCD");
+		
 		for(int i=0; i<mFilterLines.size(); ++i)
 		{
 			String s = mFilterLines.get(i);
@@ -97,6 +101,16 @@ public class VcxprojClItem
 	public boolean getDeleted()
 	{
 		return mFlgDeleted;
+	}
+	
+	public List<String> getProjLines()
+	{
+		return mProjLines;
+	}
+	
+	public List<String> getFilterLines()
+	{
+		return mFilterLines;
 	}
 	
 	public void debugPrint()

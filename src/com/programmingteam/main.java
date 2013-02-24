@@ -19,13 +19,16 @@ public class Main
 		{
 			//Read file
 			QSync qsync = new QSync(qsyncFile);
-			qsync.debugPrint();
-			System.out.println("Qsyn created ok.");
+			//System.out.println("Qsyn created ok.");
 			
 			List<QSyncVcxproj> qsyncProjs = qsync.getProjects();
 			for(QSyncVcxproj qsyncProj : qsyncProjs)
 			{
+				System.out.println(">>> Sync: " + qsyncProj.getVcxproj() + "");
 				VcxprojSync vcxprojSync = new VcxprojSync(qsyncProj.getVcxproj(), qsyncProj.getVcxprojFilters());
+				System.out.println("");
+				System.out.println("");
+				vcxprojSync.debugPrint();
 				for(QSyncImport imp: qsyncProj.getImportList())
 				{
 					ArrayList<File> dirList = new ArrayList<File>();
@@ -71,7 +74,6 @@ public class Main
 									VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
 									if(include) syncType = VcxprojSync.SyncType.INCLUDE;
 									
-									
 									String toFilter = listFiles[i].getAbsolutePath()
 											.replace(imp.getInclude(), imp.getToFilter())
 											.replace(imp.getSrc(), imp.getToFilter());
@@ -82,13 +84,11 @@ public class Main
 							}
 						}
 					}
-					
-					System.out.println("To Filter: " + imp.getToFilter());
-					System.out.println("include: " + imp.getInclude());
-					System.out.println("src: " + imp.getSrc());
 				}
-
-				vcxprojSync.debugPrint();
+					
+				//TODO save files!
+				vcxprojSync.saveVcxproj();
+				vcxprojSync.saveVcxprojFilters();
 			}
 		}
 		else
