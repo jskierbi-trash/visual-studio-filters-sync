@@ -14,7 +14,7 @@ public class Helpers
 	/// \return true if file is CiCompile
 	///
 	public static boolean isCompile(File file, String compileExt)
-	{
+	{ 
 		String ext = getFileExt(file.getAbsolutePath());
 		if( compileExt.matches("(^|.*,)"+ext+"(,.*|$)"))
 			return true;

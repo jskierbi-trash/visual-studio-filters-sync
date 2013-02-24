@@ -18,6 +18,8 @@ import com.programmingteam.Helpers;
 ///
 public class VcxprojSync
 {
+	public enum SyncType { INCLUDE, COMPILE }
+	
 	private File mProjFile;
 	private File mFilterFile;
 	
@@ -233,9 +235,7 @@ public class VcxprojSync
 	
 	private void markDeletedFiles()
 	{
-		/// Get project file dir!
 		final String basePath = Helpers.getPath(mProjFile.getAbsolutePath());
-//		System.out.println("BasePath: " + basePath);
 		
 		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
 		{
@@ -258,11 +258,15 @@ public class VcxprojSync
 		}
 	}
 	
-	public void syncFile(String relativeFile, String filter)
+	public void syncFile(String relativeFile, String filter, SyncType type)
 	{
-		System.out.println("Sync file: " + relativeFile + " (filter: " + filter + ")");
+		System.out.println("Sync "+type+": " + relativeFile + " (filter: " + filter + ")");
 		
-		
+		if(SyncType.COMPILE == type)
+		{
+			if(!mClCompileItems.containsKey(relativeFile))
+				System.out.println("\tFound non-existing COMPILE file!");
+		}
 	}
 	
 	

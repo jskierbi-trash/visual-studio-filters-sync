@@ -43,15 +43,32 @@ public class Main
 								dirList.add(listFiles[i]);
 							else
 							{
+								//TODO add handling misc
+								boolean include =false;
 								if( Helpers.isCompile(listFiles[i], qsync.getCompileExt()) ||
-									Helpers.isInclude(listFiles[i], qsync.getIncludeExt()))
+									(include=Helpers.isInclude(listFiles[i], qsync.getIncludeExt())))
 								{
+									if(include && !imp.matchesInclue(listFiles[i].getAbsolutePath()))
+									{
+										System.out.println("Skipping file: " + listFiles[i] + " (not matching regexp)");
+										continue;
+									}
+									if(!include && !imp.matchesSrc(listFiles[i].getAbsolutePath()))
+									{
+										System.out.println("Skipping file: " + listFiles[i] + " (not matching regexp)");
+										continue;
+									}
+									
+									VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
+									if(include) syncType = VcxprojSync.SyncType.INCLUDE;
+									
+									
 									String toFilter = listFiles[i].getAbsolutePath()
 											.replace(imp.getInclude(), imp.getToFilter())
 											.replace(imp.getSrc(), imp.getToFilter());
 									toFilter = Helpers.getPath(toFilter);
 									toFilter = Helpers.stripSlashes(toFilter);
-									vcxprojSync.syncFile(qsyncProj.getRelativeFile(listFiles[i]), toFilter);
+									vcxprojSync.syncFile(qsyncProj.getRelativeFile(listFiles[i]), toFilter, syncType);
 								}
 							}
 						}
