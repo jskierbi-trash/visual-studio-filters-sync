@@ -13,10 +13,13 @@ public class Helpers
 	/// \param String compile file extensions to search
 	/// \return true if file is CiCompile
 	///
-	public static boolean isCompile(String file, String compileExt)
+	public static boolean isCompile(File file, String compileExt)
 	{
-		
-		return true;
+		String ext = getFileExt(file.getAbsolutePath());
+		if( compileExt.matches("(^|.*,)"+ext+"(,.*|$)"))
+			return true;
+		else
+			return false;
 	}
 	
 	///
@@ -25,9 +28,13 @@ public class Helpers
 	/// \param String include file extensions to search in
 	/// \return true if file is CiInclude
 	///
-	public static boolean isInclude(String file, String incExt)
+	public static boolean isInclude(File file, String incExt)
 	{
-		return false;
+		String ext = getFileExt(file.getAbsolutePath());
+		if(incExt.matches("(^|.*,)"+ext+"(,.*|$)"))
+			return true;
+		else
+			return false;
 	}
 	
 	///
