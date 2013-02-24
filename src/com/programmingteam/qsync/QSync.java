@@ -80,10 +80,10 @@ public class QSync
 			mProjects = new ArrayList<QSyncVcxproj>();
 			NodeList vcxprojList = qsyncDoc.getElementsByTagName("vcxproj");
 			if(vcxprojList.getLength() == 0) throw new XMLParseException("no <vcxproj> elements found");
-			System.out.println("vcxproj length: " + vcxprojList.getLength());
+			//System.out.println("vcxproj length: " + vcxprojList.getLength());
 			for(int i=vcxprojList.getLength()-1; i>=0; --i)
 			{
-				System.out.println("Project!");
+				//System.out.println("Project!");
 				Node projNode = vcxprojList.item(i);
 				Element projElem = (Element) qsyncDoc.adoptNode(projNode);
 				String projFile = projElem.getAttribute("proj");

@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.programmingteam.qsync.QSync;
 import com.programmingteam.qsync.QSyncVcxproj;
-import com.programmingteam.qsync.VisualVcxproj;
+import com.programmingteam.vs2010.VisualVcxproj;
 
-public class main
+public class Main
 {
 	public static void main(String[] args)
 	{
