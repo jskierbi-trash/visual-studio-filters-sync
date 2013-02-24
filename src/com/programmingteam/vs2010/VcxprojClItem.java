@@ -73,7 +73,6 @@ public class VcxprojClItem
 	
 	public void setFilter(String filter)
 	{
-		System.out.println("Setting filter");
 		for(int i=0; i<mFilterLines.size(); ++i)
 		{
 			String s = mFilterLines.get(i);
@@ -85,6 +84,9 @@ public class VcxprojClItem
 				return;
 			}
 		}
+		
+		//Filter not added till this line - put new line to filters
+		mFilterLines.add("      <Filter>"+filter+"</Filter>");
 	}
 	
 	public void setDeleted(boolean flgDeleted)

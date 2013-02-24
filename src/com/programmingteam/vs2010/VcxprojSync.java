@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.programmingteam.Helpers;
@@ -30,7 +29,7 @@ public class VcxprojSync
 	///vcxproj.filters structure
 	private ArrayList<String> mFilterHeader;
 	private ArrayList<String> mFilterFooter;
-	private HashSet<String> mFilters;
+	private HashMap<String, Boolean> mFilters;
 
 	///Shared items
 	private HashMap<String, VcxprojClItem> mClIncludeItems;
@@ -51,7 +50,7 @@ public class VcxprojSync
 		
 		mClIncludeItems = new HashMap<String, VcxprojClItem>();
 		mClCompileItems = new HashMap<String, VcxprojClItem>();
-		mFilters = new HashSet<String>();
+		mFilters = new HashMap<String, Boolean>();
 
 		parseVcxproj();
 		parseFilters();
@@ -176,7 +175,7 @@ public class VcxprojSync
 				else if(ParseContext.FILTER==context)
 				{
 					if(line.matches(".*<Filter Include.*"))
-						mFilters.add(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
+						mFilters.put(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")), false);
 				}
 				else if(ParseContext.COMPILE==context && !line.matches(".*</ItemGroup>.*"))
 				{
@@ -245,14 +244,28 @@ public class VcxprojSync
 		
 		if(SyncType.COMPILE==type && !mClCompileItems.containsKey(relativeFile))
 		{
-			System.out.println("Adding file: " + relativeFile);
-			detectFileMove(relativeFile, filter, mClCompileItems);
+			if(!detectFileMove(relativeFile, filter, mClCompileItems))
+			{
+				System.out.println("Adding file: " + relativeFile);
+				VcxprojClItem item = new VcxprojClItem();
+				item.setDeleted(false);
+				item.setRelativePath(relativeFile);
+				item.setFilter(filter);
+				mClCompileItems.put(relativeFile, item);
+			}
 		}
 		
 		if(SyncType.INCLUDE==type && !mClIncludeItems.containsKey(relativeFile))
 		{
-			System.out.println("Adding file: " + relativeFile);
-			detectFileMove(relativeFile, filter, mClIncludeItems);
+			if(!detectFileMove(relativeFile, filter, mClCompileItems))
+			{
+				System.out.println("Adding file: " + relativeFile);
+				VcxprojClItem item = new VcxprojClItem();
+				item.setDeleted(false);
+				item.setRelativePath(relativeFile);
+				item.setFilter(filter);
+				mClIncludeItems.put(relativeFile, item);
+			}
 		}
 	}
 	
@@ -266,14 +279,15 @@ public class VcxprojSync
 				if(movedItem!=null)
 				{
 					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
-					System.err.println("\tConflict: ["+movedItem.getFilePath()+"] and ["+file+"]");
+					System.err.println("\tConflict: "+movedItem.getFilePath()+" VS. "+file+"");
 					System.exit(-1);
 				}
-				
+
+				System.out.println("Moving file from: " + i.getValue().getFilePath() + " to: "+file);
 				movedItem = i.getValue();
 				movedItem.setRelativePath(file);
 				movedItem.setFilter(filter);
-				System.out.println("Found FILE MOVE!");
+				movedItem.setDeleted(false);
 			}
 		}
 		
@@ -286,11 +300,11 @@ public class VcxprojSync
 		int slashIndex;
 		do
 		{
-			if(!mFilters.contains(sliceFilter))
-			{
+			Boolean flgExists = mFilters.remove(sliceFilter);
+			if(flgExists==null)
 				System.out.println("Filter added: " + sliceFilter);
-				mFilters.add(sliceFilter);
-			}
+			
+			mFilters.put(sliceFilter, true);
 			
 			slashIndex = sliceFilter.lastIndexOf('\\');
 			if(slashIndex>0)
@@ -316,7 +330,7 @@ public class VcxprojSync
 		
 		System.out.println("");
 		System.out.println(">>> Filters <<<");
-		for(String s: mFilters) System.out.println(s);
+		for(Entry<String, Boolean> i: mFilters.entrySet()) System.out.println("["+i.getValue()+"]" +i.getKey());
 		
 		System.out.println("");
 		System.out.println("ClIncludes:");
