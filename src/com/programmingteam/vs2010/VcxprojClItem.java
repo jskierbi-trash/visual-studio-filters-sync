@@ -74,9 +74,6 @@ public class VcxprojClItem
 	
 	public void setFilter(String filter)
 	{
-		if(mFileRelativePath!=null && mFileRelativePath.matches(".*CW\\\\Config.*"))
-			System.out.println("ABCD");
-		
 		for(int i=0; i<mFilterLines.size(); ++i)
 		{
 			String s = mFilterLines.get(i);

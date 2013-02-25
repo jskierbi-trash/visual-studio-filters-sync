@@ -38,7 +38,7 @@ public class VcxprojSync
 	private HashMap<String, VcxprojClItem> mClIncludeItems;
 	private HashMap<String, VcxprojClItem> mClCompileItems;
 	
-	private enum ParseContext { HEADER, FILTER, INCLUDE, COMPILE, FOOTER }
+	private enum ParseContext { HEADER, NOCONTEXT, FILTER, INCLUDE, COMPILE, FOOTER }
 	
 	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
@@ -106,7 +106,9 @@ public class VcxprojSync
 						throw new ParseException("<ItemGroup> element not closed at line: " + lineCount, lineCount);
 				}
 				
-				if(ParseContext.HEADER==context)
+				if(line.matches(".*</Project>.*"))
+					mVcxFooter.add(line);
+				else if(ParseContext.HEADER==context)
 					mVcxHeader.add(line);
 				else if(ParseContext.FOOTER==context)
 					mVcxFooter.add(line);
@@ -153,8 +155,6 @@ public class VcxprojSync
 				{
 					contextLine = line;
 					line = in.readLine();
-					if(line.matches(".*CW\\\\Config\\.h.*"))
-						System.out.println("asdf");
 					
 					if(line!=null)
 					{
@@ -181,14 +181,16 @@ public class VcxprojSync
 						throw new ParseException("<ItemGroup> element not closed at line: " + lineCount, lineCount);
 				}
 				
-				if(ParseContext.HEADER==context)
+				if(line.matches(".*</Project>.*"))
+					mFilterFooter.add(line);
+				else if(ParseContext.HEADER==context)
 					mFilterHeader.add(line);
 				else if(ParseContext.FOOTER==context)
 					mFilterFooter.add(line);
 				else if(ParseContext.FILTER==context)
 				{
 					if(line.matches(".*<Filter Include.*"))
-						mFilters.put(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")), false);
+						mFilters.put(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")), true);
 				}
 				else if(ParseContext.COMPILE==context && !line.matches(".*</ItemGroup>.*"))
 				{					
@@ -207,7 +209,7 @@ public class VcxprojSync
 				else if(ParseContext.INCLUDE==context && !line.matches(".*</ItemGroup>.*"))
 				{					
 					if(item==null) //find item
-					{
+					{						
 						item = mClIncludeItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 						if(item==null)
 						{
@@ -255,30 +257,36 @@ public class VcxprojSync
 	{
 		this.syncFilter(filter);
 		
-		if(SyncType.COMPILE==type && !mClCompileItems.containsKey(relativeFile))
+		if(SyncType.COMPILE==type)
 		{
-			if(!detectFileMove(relativeFile, filter, mClCompileItems))
+			VcxprojClItem item = mClCompileItems.get(relativeFile);
+			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems))
 			{
 				System.out.println("Adding file: " + relativeFile);
-				VcxprojClItem item = new VcxprojClItem();
+				item = new VcxprojClItem();
 				item.setDeleted(false);
 				item.setRelativePath(relativeFile);
 				item.setFilter(filter);
 				mClCompileItems.put(relativeFile, item);
 			}
+			else if(item!=null)
+				item.setFilter(filter);
 		}
 		
-		if(SyncType.INCLUDE==type && !mClIncludeItems.containsKey(relativeFile))
+		if(SyncType.INCLUDE==type)
 		{
-			if(!detectFileMove(relativeFile, filter, mClCompileItems))
+			VcxprojClItem item = mClIncludeItems.get(relativeFile);
+			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems))
 			{
 				System.out.println("Adding file: " + relativeFile);
-				VcxprojClItem item = new VcxprojClItem();
+				item = new VcxprojClItem();
 				item.setDeleted(false);
 				item.setRelativePath(relativeFile);
 				item.setFilter(filter);
 				mClIncludeItems.put(relativeFile, item);
 			}
+			else if(item!=null)
+				item.setFilter(filter);
 		}
 	}
 	
@@ -313,7 +321,7 @@ public class VcxprojSync
 		int slashIndex;
 		do
 		{
-			Boolean flgExists = mFilters.remove(sliceFilter);
+			Boolean flgExists = mFilters.get(sliceFilter);
 			if(flgExists==null)
 				System.out.println("Filter added: " + sliceFilter);
 			
@@ -326,6 +334,15 @@ public class VcxprojSync
 		while( slashIndex >0 );
 	}
 
+	public void invalidateFilters(String toFilter)
+	{
+		for(Entry<String, Boolean> i: mFilters.entrySet())
+		{
+			if(i.getKey().startsWith(toFilter))
+				mFilters.put(i.getKey(), false);
+		}
+	}
+	
 	public void saveVcxproj()
 	{
 		try
@@ -508,30 +525,30 @@ public class VcxprojSync
 	
 	public void debugPrint()
 	{
-		System.out.println(">>> VCX HEADER <<<");
-		for(String s: mVcxHeader) System.out.println(s);
-		System.out.println("");
-		System.out.println(">>> VCX FOOTER <<<");
-		for(String s: mVcxFooter) System.out.println(s);
-		
-		System.out.println("");
-		System.out.println(">>> Filter HEADER <<<");
-		for(String s: mFilterHeader) System.out.println(s);
-		System.out.println("");
-		System.out.println(">>> Filter FOOTER <<<");
-		for(String s: mFilterFooter) System.out.println(s);
+//		System.out.println(">>> VCX HEADER <<<");
+//		for(String s: mVcxHeader) System.out.println(s);
+//		System.out.println("");
+//		System.out.println(">>> VCX FOOTER <<<");
+//		for(String s: mVcxFooter) System.out.println(s);
+//		
+//		System.out.println("");
+//		System.out.println(">>> Filter HEADER <<<");
+//		for(String s: mFilterHeader) System.out.println(s);
+//		System.out.println("");
+//		System.out.println(">>> Filter FOOTER <<<");
+//		for(String s: mFilterFooter) System.out.println(s);
 		
 		System.out.println("");
 		System.out.println(">>> Filters <<<");
 		for(Entry<String, Boolean> i: mFilters.entrySet()) System.out.println("["+i.getValue()+"]" +i.getKey());
 		
-		System.out.println("");
-		System.out.println("ClIncludes:");
-		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
-		
-		System.out.println("");
-		System.out.println("ClCompiles:");
-		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
+//		System.out.println("");
+//		System.out.println("ClIncludes:");
+//		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
+//		
+//		System.out.println("");
+//		System.out.println("ClCompiles:");
+//		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
 		
 	}
 }

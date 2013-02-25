@@ -24,13 +24,12 @@ public class Main
 			List<QSyncVcxproj> qsyncProjs = qsync.getProjects();
 			for(QSyncVcxproj qsyncProj : qsyncProjs)
 			{
-				System.out.println(">>> Sync: " + qsyncProj.getVcxproj() + "");
+				System.out.println("\n>>> Sync: " + qsyncProj.getVcxproj() + "");
 				VcxprojSync vcxprojSync = new VcxprojSync(qsyncProj.getVcxproj(), qsyncProj.getVcxprojFilters());
-				System.out.println("");
-				System.out.println("");
-				vcxprojSync.debugPrint();
 				for(QSyncImport imp: qsyncProj.getImportList())
 				{
+					vcxprojSync.invalidateFilters(imp.getToFilter());
+					
 					ArrayList<File> dirList = new ArrayList<File>();
 					dirList.add(new File(imp.getInclude()));
 					dirList.add(new File(imp.getSrc()));
@@ -40,6 +39,11 @@ public class Main
 						File dir = dirList.get(0);
 						dirList.remove(0);
 						File listFiles[] = dir.listFiles();
+						if(listFiles==null)
+						{
+							System.err.println("Directory does not exist! " + dir);
+							System.exit(-1);
+						}
 						for(int i=0; i<listFiles.length; ++i)
 						{
 							if(listFiles[i].isDirectory())
