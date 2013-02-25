@@ -1,0 +1,16 @@
+<!-- Todo validate all fields! @regex -->
+<qubicsync version="1.0">
+	<ClInclude ext="h" /> <!-- what filetypes should go into clinclude -->
+	<ClCompile ext="cpp" /> <!-- what filetypes should go into clcompile -->
+
+	<!-- CWay START -->
+	<vcxproj proj="${CWAY_DIR}/Project_Win/CWayEngine_Win.vcxproj"> 	<!-- Filters file is deducted automatically -->
+		<import tofilter="/Source Files">								<!-- Multiple roots for one filter -->
+			<include regexp="^(?:(?!_Test\.(cpp|h)$).)*$">${CWAY_DIR}/include/CW</include>		<!-- Put here h files (add class wizard) -->
+			<src regexp="^(?:(?!_Test\.(cpp|h)$).)*$">${CWAY_DIR}/src/CW</src>				<!-- Put here cpp files (add class wizard) -->
+			<!--<misc>${CWAY_DIR}/misc/elements</misc>-->
+		</import>
+	</vcxproj>
+	<!-- CWay END -->
+
+</qubicsync>
