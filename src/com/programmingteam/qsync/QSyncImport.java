@@ -22,6 +22,9 @@ public class QSyncImport
 	private String mRegexpInclude;
 	private String mRegexpSrc;
 	
+	private String mRegexpExcludeInc;
+	private String mRegexpExcludeSrc;
+	
 	private List<String> mMisc;
 	
 	///
@@ -72,6 +75,28 @@ public class QSyncImport
 		}
 	}
 
+	public void setExcludeSrc(String regexp)
+	{
+		mRegexpExcludeSrc = regexp;
+		try { Pattern.compile(mRegexpExcludeSrc); }
+		catch (PatternSyntaxException e) 
+		{  
+			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
+			System.exit(-1);
+		}
+	}
+	
+	public void setExcludeInc(String regexp)
+	{
+		mRegexpExcludeInc = regexp;
+		try { Pattern.compile(mRegexpExcludeInc); }
+		catch (PatternSyntaxException e) 
+		{  
+			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
+			System.exit(-1);
+		}
+	}
+	
 	///
 	/// \biref sets absolute path to misc folder
 	/// \param[in] String absolute path to include folder to be imported
@@ -110,6 +135,18 @@ public class QSyncImport
 		return file.matches(mRegexpSrc);
 	}
 
+	public boolean isExcludedInc(String file)
+	{
+		if(mRegexpExcludeInc==null) return false;
+		else return file.matches(mRegexpExcludeInc);
+	}
+	
+	public boolean isExcludedSrc(String file)
+	{
+		if(mRegexpExcludeSrc==null) return false;
+		else return file.matches(mRegexpExcludeSrc);
+	}
+	
 	///
 	/// \brief returns sources absolute path
 	///

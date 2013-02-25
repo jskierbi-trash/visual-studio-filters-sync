@@ -123,8 +123,11 @@ public class QSync
 						
 						if(includeNode.getNodeName().equals("include"))
 						{
-							if(includeNode.getAttributes().getNamedItem("regexp")!=null)
-								imp.setRegexpInclude(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
+							Node attrNode;
+							if( (attrNode=includeNode.getAttributes().getNamedItem("accept"))!=null )
+								imp.setRegexpInclude(attrNode.getNodeValue());
+							if( (attrNode=includeNode.getAttributes().getNamedItem("exclude"))!=null )
+								imp.setIncludeExcludeFromBuild(attrNode.getNodeValue());
 							
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
