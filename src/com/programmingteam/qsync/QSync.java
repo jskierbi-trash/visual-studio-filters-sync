@@ -132,7 +132,7 @@ public class QSync
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
 							inc = true;
-							String includePath = includeNode.getFirstChild().getNodeValue();
+							String includePath = includeNode.getFirstChild().getNodeValue().trim();
 							includePath = Helpers.resolvePath(mPwd.getAbsolutePath(), includePath);
 							imp.setInclude(includePath);
 						}
@@ -147,7 +147,7 @@ public class QSync
 							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<src> element is empty");
 							src = true;
-							String srcPath = includeNode.getFirstChild().getNodeValue();
+							String srcPath = includeNode.getFirstChild().getNodeValue().trim();
 							srcPath = Helpers.resolvePath(mPwd.getAbsolutePath(), srcPath);
 							imp.setSrc(srcPath);
 						}
