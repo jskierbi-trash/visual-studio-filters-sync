@@ -38,7 +38,7 @@ public class VcxprojSync
 	private HashMap<String, VcxprojClItem> mClIncludeItems;
 	private HashMap<String, VcxprojClItem> mClCompileItems;
 	
-	private enum ParseContext { HEADER, NOCONTEXT, FILTER, INCLUDE, COMPILE, FOOTER }
+	private enum CTX { NOCTX, FILTER, INCLUDE, COMPILE }
 	
 	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
@@ -63,68 +63,74 @@ public class VcxprojSync
 	private void parseVcxproj()
 	{
 		BufferedReader in =null;
+		boolean noEndprojTag =false;
 		try //Load *.vcxproj
 		{
 			in = new BufferedReader(new FileReader(mProjFile));
-			ParseContext context = ParseContext.HEADER;
+			CTX ctx = CTX.NOCTX;
+			boolean flgFooter = false;
+			
 			String line, contextLine;
 			VcxprojClItem item = new VcxprojClItem();
 			int lineCount = 0;
 			while((line=in.readLine())!=null)
 			{
 				++lineCount;
-				if(line.matches(".*<ItemGroup.*")) //Start context
+				
+				//Handle closing of project
+				if(line.matches(".*<Project .*/>"))
+				{
+					line = line.replace("/>", ">");
+					noEndprojTag = true;
+				}
+				else if(line.matches(".*<ItemGroup>.*") && CTX.NOCTX==ctx) //Check context
 				{
 					contextLine = line;
-					line = in.readLine();
-					if(line!=null)
-					{
-						if(line.matches(".*<ClInclude .*"))
-						{
-							item = new VcxprojClItem();
-							context = ParseContext.INCLUDE;
-						}
-						else if(line.matches(".*<ClCompile .*"))
-						{
-							item = new VcxprojClItem();
-							context = ParseContext.COMPILE;
-						}
-						else
-						{
-							if(ParseContext.INCLUDE==context || ParseContext.COMPILE==context)
-							{
-								context = ParseContext.FOOTER;
-								mVcxFooter.add(contextLine);
-							}
-							else
-							{
-								mVcxHeader.add(contextLine);
-							}
-						}
-					}
-					else
+					if( (line=in.readLine()) ==null)
 						throw new ParseException("<ItemGroup> element not closed at line: " + lineCount, lineCount);
+					
+					if(line.matches(".*<ClInclude .*"))
+					{
+						flgFooter = true;
+						item = new VcxprojClItem();
+						ctx = CTX.INCLUDE;
+					}
+					else if(line.matches(".*<ClCompile .*"))
+					{
+						flgFooter = true;
+						item = new VcxprojClItem();
+						ctx = CTX.COMPILE;
+					}
+					else //No context, write to header or footer...
+					{
+						if(flgFooter) mVcxFooter.add(contextLine);
+						else mVcxHeader.add(contextLine);
+					}
+				}
+				else if(line.matches(".*</ItemGroup>.*") && CTX.NOCTX!=ctx) //drop context
+				{
+					ctx = CTX.NOCTX;
+					continue;
 				}
 				
-				if(line.matches(".*</Project>.*"))
-					mVcxFooter.add(line);
-				else if(ParseContext.HEADER==context)
-					mVcxHeader.add(line);
-				else if(ParseContext.FOOTER==context)
-					mVcxFooter.add(line);
-				else if(ParseContext.COMPILE==context)
+				if(CTX.NOCTX==ctx)
 				{
-					if(item.addProjLine(line)) //is element closed?
-					{
-						mClCompileItems.put(item.getFilePath(), item);
-						item = new VcxprojClItem();
-					}
+					if(flgFooter) mVcxFooter.add(line);
+					else mVcxHeader.add(line);
 				}
-				else if(ParseContext.INCLUDE==context)
+				else if(CTX.INCLUDE==ctx)
 				{
 					if(item.addProjLine(line))
 					{
 						mClIncludeItems.put(item.getFilePath(), item);
+						item = new VcxprojClItem();
+					}
+				}
+				else if(CTX.COMPILE==ctx)
+				{
+					if(item.addProjLine(line)) //is element closed?
+					{
+						mClCompileItems.put(item.getFilePath(), item);
 						item = new VcxprojClItem();
 					}
 				}
@@ -135,68 +141,82 @@ public class VcxprojSync
 		catch (IOException e) { System.err.println("IOException reading file: " + mProjFile); System.exit(-1); }
 		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
 		
+		if(noEndprojTag)
+			mVcxFooter.add("</Project>");
+		
 	}
 	
 	private void parseFilters()
 	{
 		BufferedReader in =null;
+		boolean noEndprojTag =false;
 		try //Load *.vcxproj.filters
 		{
 			in = new BufferedReader(new FileReader(mFilterFile));
-			ParseContext context = ParseContext.HEADER;
+			CTX ctx = CTX.NOCTX;
+			boolean flgFooter = false;
+			
 			String line, contextLine;
-			VcxprojClItem item = null;
+			VcxprojClItem item =null;
 			int lineCount = 0;
 			while((line=in.readLine())!=null)
 			{
 				++lineCount;
 				
-				if(line.matches(".*<ItemGroup.*")) //Start context
+				//Handle closing of project
+				if(line.matches(".*<Project .*/>"))
+				{
+					line = line.replace("/>", ">");
+					noEndprojTag = true;
+				}
+				else if(line.matches(".*<ItemGroup>.*") && CTX.NOCTX==ctx) //Check context
 				{
 					contextLine = line;
-					line = in.readLine();
-					
-					if(line!=null)
-					{
-						if(line.matches(".*<ClInclude .*"))
-							context = ParseContext.INCLUDE;
-						else if(line.matches(".*<ClCompile .*"))
-							context = ParseContext.COMPILE;
-						else if(line.matches(".*<Filter Include=.*"))
-							context = ParseContext.FILTER;
-						else
-						{
-							if(ParseContext.INCLUDE==context || ParseContext.COMPILE==context)
-							{
-								context = ParseContext.FOOTER;
-								mFilterFooter.add(contextLine);
-							}
-							else
-							{
-								mFilterHeader.add(contextLine);
-							}
-						}
-					}
-					else
+					if( (line=in.readLine()) ==null)
 						throw new ParseException("<ItemGroup> element not closed at line: " + lineCount, lineCount);
+					
+					if(line.matches(".*<ClInclude .*"))
+					{
+						flgFooter = true;
+						ctx = CTX.INCLUDE;
+					}
+					else if(line.matches(".*<ClCompile .*"))
+					{
+						flgFooter = true;
+						ctx = CTX.COMPILE;
+					}
+					else if(line.matches(".*<Filter Include=.*"))
+					{
+						flgFooter = true;
+						ctx = CTX.FILTER;
+					}
+					else //No context, write to header or footer...
+					{
+						if(flgFooter) mFilterFooter.add(contextLine);
+						else mFilterHeader.add(contextLine);
+					}
+				}
+				else if(line.matches(".*</ItemGroup>.*") && CTX.NOCTX!=ctx) //drop context
+				{
+					ctx = CTX.NOCTX;
+					continue;
 				}
 				
-				if(line.matches(".*</Project>.*"))
-					mFilterFooter.add(line);
-				else if(ParseContext.HEADER==context)
-					mFilterHeader.add(line);
-				else if(ParseContext.FOOTER==context)
-					mFilterFooter.add(line);
-				else if(ParseContext.FILTER==context)
+				if(CTX.NOCTX==ctx)
+				{
+					if(flgFooter) mFilterFooter.add(line);
+					else mFilterHeader.add(line);
+				}
+				else if(CTX.FILTER==ctx)
 				{
 					if(line.matches(".*<Filter Include.*"))
 						mFilters.put(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")), true);
 				}
-				else if(ParseContext.COMPILE==context && !line.matches(".*</ItemGroup>.*"))
-				{					
+				else if(CTX.INCLUDE==ctx)
+				{
 					if(item==null) //find item
-					{
-						item = mClCompileItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
+					{						
+						item = mClIncludeItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 						if(item==null)
 						{
 							System.err.println("Could not find ClItem element for filter file!");
@@ -206,11 +226,11 @@ public class VcxprojSync
 					if(item.addFilterLine(line)) //is element closed?
 						item = null;
 				}
-				else if(ParseContext.INCLUDE==context && !line.matches(".*</ItemGroup>.*"))
-				{					
+				else if(CTX.COMPILE==ctx)
+				{
 					if(item==null) //find item
-					{						
-						item = mClIncludeItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
+					{
+						item = mClCompileItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 						if(item==null)
 						{
 							System.err.println("Could not find ClItem element for filter file!");
@@ -226,6 +246,9 @@ public class VcxprojSync
 		catch (FileNotFoundException ex) { System.err.println("File not found: " + mFilterFile); System.exit(-1); }
 		catch (IOException ex) { System.err.println("IOException reading file: " + mFilterFile); System.exit(-1); }
 		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
+	
+		if(noEndprojTag)
+			mFilterFooter.add("</Project>");
 	}
 	
 	private void markDeletedFiles()
@@ -366,7 +389,11 @@ public class VcxprojSync
 			out.newLine();
 			for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
 			{
-				if(i.getValue().getDeleted()) continue;
+				if(i.getValue().getDeleted()) 
+				{
+					System.out.println("File removed: " + i.getKey());
+					continue;
+				}
 				
 				List<String> projLines = i.getValue().getProjLines();
 				if(projLines==null || projLines.size()==0)
@@ -464,6 +491,10 @@ public class VcxprojSync
 					out.write("    </Filter>");
 					out.newLine();
 				}
+				else
+				{
+					System.out.println("Filter removed: " + i.getKey());
+				}
 			}
 			out.write("  </ItemGroup>");
 			out.newLine();
@@ -528,18 +559,18 @@ public class VcxprojSync
 	
 	public void debugPrint()
 	{
-//		System.out.println(">>> VCX HEADER <<<");
-//		for(String s: mVcxHeader) System.out.println(s);
-//		System.out.println("");
-//		System.out.println(">>> VCX FOOTER <<<");
-//		for(String s: mVcxFooter) System.out.println(s);
-//		
-//		System.out.println("");
-//		System.out.println(">>> Filter HEADER <<<");
-//		for(String s: mFilterHeader) System.out.println(s);
-//		System.out.println("");
-//		System.out.println(">>> Filter FOOTER <<<");
-//		for(String s: mFilterFooter) System.out.println(s);
+		System.out.println(">>> VCX HEADER <<<");
+		for(String s: mVcxHeader) System.out.println(s);
+		System.out.println("");
+		System.out.println(">>> VCX FOOTER <<<");
+		for(String s: mVcxFooter) System.out.println(s);
+		
+		System.out.println("");
+		System.out.println(">>> Filter HEADER <<<");
+		for(String s: mFilterHeader) System.out.println(s);
+		System.out.println("");
+		System.out.println(">>> Filter FOOTER <<<");
+		for(String s: mFilterFooter) System.out.println(s);
 		
 		System.out.println("");
 		System.out.println(">>> Filters <<<");
