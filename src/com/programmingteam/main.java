@@ -66,14 +66,20 @@ public class Main
 								{
 									if(include && !imp.matchesInclue(listFiles[i].getAbsolutePath()))
 									{
-										System.out.println("Skipping file: " + listFiles[i] + " (not matching regexp)");
+										System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
 										continue;
 									}
 									if(!include && !imp.matchesSrc(listFiles[i].getAbsolutePath()))
 									{
-										System.out.println("Skipping file: " + listFiles[i] + " (not matching regexp)");
+										System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
 										continue;
 									}
+									
+									boolean isExcludedFromBuild = false;
+									if(include)
+										isExcludedFromBuild = imp.isExcludedInc(""+listFiles[i]);
+									else
+										isExcludedFromBuild = imp.isExcludedSrc(""+listFiles[i]);
 									
 									VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
 									if(include) syncType = VcxprojSync.SyncType.INCLUDE;
@@ -83,7 +89,11 @@ public class Main
 											.replace(imp.getSrc(), imp.getToFilter());
 									toFilter = Helpers.getPath(toFilter);
 									toFilter = Helpers.stripSlashes(toFilter);
-									vcxprojSync.syncFile(qsyncProj.getRelativeFile(listFiles[i]), toFilter, syncType);
+									vcxprojSync.syncFile(
+											qsyncProj.getRelativeFile(listFiles[i]), 
+											toFilter, 
+											syncType, 
+											isExcludedFromBuild);
 								}
 							}
 						}

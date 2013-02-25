@@ -253,20 +253,21 @@ public class VcxprojSync
 		}
 	}
 	
-	public void syncFile(String relativeFile, String filter, SyncType type)
+	public void syncFile(String relativeFile, String filter, SyncType type, boolean isExcluded)
 	{
 		this.syncFilter(filter);
 		
 		if(SyncType.COMPILE==type)
 		{
 			VcxprojClItem item = mClCompileItems.get(relativeFile);
-			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems))
+			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems, isExcluded))
 			{
 				System.out.println("Adding file: " + relativeFile);
 				item = new VcxprojClItem();
 				item.setDeleted(false);
 				item.setRelativePath(relativeFile);
 				item.setFilter(filter);
+				if(isExcluded) item.setExcludeFromBuild();
 				mClCompileItems.put(relativeFile, item);
 			}
 			else if(item!=null)
@@ -276,13 +277,14 @@ public class VcxprojSync
 		if(SyncType.INCLUDE==type)
 		{
 			VcxprojClItem item = mClIncludeItems.get(relativeFile);
-			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems))
+			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems, isExcluded))
 			{
 				System.out.println("Adding file: " + relativeFile);
 				item = new VcxprojClItem();
 				item.setDeleted(false);
 				item.setRelativePath(relativeFile);
 				item.setFilter(filter);
+				if(isExcluded) item.setExcludeFromBuild();
 				mClIncludeItems.put(relativeFile, item);
 			}
 			else if(item!=null)
@@ -290,7 +292,7 @@ public class VcxprojSync
 		}
 	}
 	
-	private boolean detectFileMove(String file, String filter, HashMap<String, VcxprojClItem> container)
+	private boolean detectFileMove(String file, String filter, HashMap<String, VcxprojClItem> container, boolean isExcluded)
 	{
 		VcxprojClItem movedItem =null;
 		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
@@ -309,6 +311,7 @@ public class VcxprojSync
 				movedItem.setRelativePath(file);
 				movedItem.setFilter(filter);
 				movedItem.setDeleted(false);
+				if(isExcluded) movedItem.setExcludeFromBuild();
 			}
 		}
 		

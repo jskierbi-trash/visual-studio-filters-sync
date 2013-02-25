@@ -95,6 +95,22 @@ public class VcxprojClItem
 		this.mFlgDeleted = flgDeleted;
 	}
 	
+	public void setExcludeFromBuild()
+	{
+		System.out.print("Exclude from build: " + mFileRelativePath);
+		for(String s: mProjLines)
+		{
+			if(s.matches(".*<ExcludedFromBuild"))
+			{
+				System.out.println(" File already excluded!");
+				return;
+			}
+		}
+		
+		System.out.println("Excluding.");
+		mProjLines.add("      <ExcludedFromBuild>true</ExcludedFromBuild>");
+	}
+	
 	public boolean getDeleted()
 	{
 		return mFlgDeleted;
