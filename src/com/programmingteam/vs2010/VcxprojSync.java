@@ -83,6 +83,10 @@ public class VcxprojSync
 					line = line.replace("/>", ">");
 					noEndprojTag = true;
 				}
+				else if(line.matches(".*</Project>.*"))
+				{
+					flgFooter = true;
+				}
 				else if(line.matches(".*<ItemGroup>.*") && CTX.NOCTX==ctx) //Check context
 				{
 					contextLine = line;
@@ -168,6 +172,10 @@ public class VcxprojSync
 				{
 					line = line.replace("/>", ">");
 					noEndprojTag = true;
+				}
+				else if(line.matches(".*</Project>.*"))
+				{
+					flgFooter = true;
 				}
 				else if(line.matches(".*<ItemGroup>.*") && CTX.NOCTX==ctx) //Check context
 				{
