@@ -127,7 +127,7 @@ public class QSync
 							if( (attrNode=includeNode.getAttributes().getNamedItem("accept"))!=null )
 								imp.setRegexpInclude(attrNode.getNodeValue());
 							if( (attrNode=includeNode.getAttributes().getNamedItem("exclude"))!=null )
-								imp.setIncludeExcludeFromBuild(attrNode.getNodeValue());
+								imp.setExcludeInc(attrNode.getNodeValue());
 							
 							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
@@ -138,8 +138,11 @@ public class QSync
 						}
 						else if(includeNode.getNodeName().equals("src"))
 						{
-							if(includeNode.getAttributes().getNamedItem("regexp")!=null)
-								imp.setRegexpSrc(includeNode.getAttributes().getNamedItem("regexp").getNodeValue());
+							Node attrNode;
+							if( (attrNode=includeNode.getAttributes().getNamedItem("regexp"))!=null)
+								imp.setRegexpSrc(attrNode.getNodeValue());
+							if( (attrNode=includeNode.getAttributes().getNamedItem("exclude"))!=null )
+								imp.setExcludeSrc(attrNode.getNodeValue());
 							
 							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
 							if(includeNode.getFirstChild()==null) throw new XMLParseException("<src> element is empty");
