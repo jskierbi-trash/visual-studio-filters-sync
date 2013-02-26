@@ -24,11 +24,11 @@ public class Main
 			List<QSyncVcxproj> qsyncProjs = qsync.getProjects();
 			for(QSyncVcxproj qsyncProj : qsyncProjs)
 			{
-				System.out.println("\n>>> Sync: " + qsyncProj.getVcxproj() + "");
+				System.out.println(">>> Sync: " + qsyncProj.getVcxproj() + "");
 				VcxprojSync vcxprojSync = new VcxprojSync(qsyncProj.getVcxproj(), qsyncProj.getVcxprojFilters());
 				for(QSyncImport imp: qsyncProj.getImportList())
 				{
-					System.out.println("\nParsing <import tofilter=\"" + imp.getToFilter() + "\">");
+					System.out.println("Parsing <import tofilter=\"" + imp.getToFilter() + "\">");
 					vcxprojSync.invalidateFilters(imp.getToFilter());
 					
 					ArrayList<File> dirList = new ArrayList<File>();

@@ -238,8 +238,10 @@ public class VcxprojSync
 						item = mClIncludeItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 						if(item==null)
 						{
-							System.err.println("Could not find ClItem element for filter file!");
-							System.exit(-1);
+							item = new VcxprojClItem();
+							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
+//							System.err.println("Could not find ClItem element for filter file!");
+//							System.exit(-1);
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -252,8 +254,10 @@ public class VcxprojSync
 						item = mClCompileItems.get(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 						if(item==null)
 						{
-							System.err.println("Could not find ClItem element for filter file!");
-							System.exit(-1);
+							item = new VcxprojClItem();
+							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
+//							System.err.println("Could not find ClItem element for filter file!");
+//							System.exit(-1);
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
