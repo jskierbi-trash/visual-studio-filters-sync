@@ -285,49 +285,43 @@ public class VcxprojSync
 	}
 	
 	public void syncFile(String relativeFile, String filter, SyncType type, boolean isExcluded)
-	{
+	{		
+		if(relativeFile.matches(".*3DS.*"))
+			System.out.println("");
+		
+		System.out.println("Item: " + relativeFile);
 		this.syncFilter(filter);
+
+		VcxprojClItem item =null;
+		if(SyncType.COMPILE==type) item = mClCompileItems.get(relativeFile);
+		if(SyncType.INCLUDE==type) item = mClIncludeItems.get(relativeFile);
 		
-		if(SyncType.COMPILE==type)
+		if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems, isExcluded))
 		{
-			VcxprojClItem item = mClCompileItems.get(relativeFile);
-			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems, isExcluded))
-			{
-				System.out.println("Adding file: " + relativeFile);
-				item = new VcxprojClItem();
-				item.setDeleted(false);
-				item.setRelativePath(relativeFile);
-				item.setFilter(filter);
-				if(isExcluded) item.setExcludeFromBuild();
-				mClCompileItems.put(relativeFile, item);
-			}
-			else if(item!=null)
-				item.setFilter(filter);
+			System.out.println("Adding file: " + relativeFile);
+			item = new VcxprojClItem();
+			item.setDeleted(false);
+			item.setRelativePath(relativeFile);
+			item.setFilter(filter);
+			if(isExcluded) item.setExcludeFromBuild();
+			
+			if(SyncType.COMPILE==type) mClCompileItems.put(relativeFile, item);
+			if(SyncType.INCLUDE==type) mClIncludeItems.put(relativeFile, item);
 		}
-		
-		if(SyncType.INCLUDE==type)
+		else if(item!=null)
 		{
-			VcxprojClItem item = mClIncludeItems.get(relativeFile);
-			if(item==null && !detectFileMove(relativeFile, filter, mClCompileItems, isExcluded))
-			{
-				System.out.println("Adding file: " + relativeFile);
-				item = new VcxprojClItem();
-				item.setDeleted(false);
-				item.setRelativePath(relativeFile);
-				item.setFilter(filter);
-				if(isExcluded) item.setExcludeFromBuild();
-				mClIncludeItems.put(relativeFile, item);
-			}
-			else if(item!=null)
-				item.setFilter(filter);
+			if(isExcluded) item.setExcludeFromBuild();
+			item.setDeleted(false);
+			item.setFilter(filter);
 		}
 	}
 	
 	private boolean detectFileMove(String file, String filter, HashMap<String, VcxprojClItem> container, boolean isExcluded)
 	{
 		VcxprojClItem movedItem =null;
-		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
-		{
+		String movedFilter = null;
+		for(Entry<String, VcxprojClItem> i: container.entrySet())
+		{	
 			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
 			{
 				if(movedItem!=null)
@@ -337,6 +331,7 @@ public class VcxprojSync
 					System.exit(-1);
 				}
 
+				movedFilter = i.getKey();
 				System.out.println("Moving file from: " + i.getValue().getFilePath() + " to: "+file);
 				movedItem = i.getValue();
 				movedItem.setRelativePath(file);
@@ -345,19 +340,26 @@ public class VcxprojSync
 				if(isExcluded) movedItem.setExcludeFromBuild();
 			}
 		}
+
+		if(movedItem!=null)
+		{
+			container.remove(movedFilter);
+			container.put(file, movedItem);
+		}
 		
 		return movedItem!=null;
 	}
 	
 	public void syncFilter(String filter)
 	{
+		System.out.println("Sync filter: " + filter);
 		String sliceFilter = filter;
 		int slashIndex;
 		do
 		{
 			Boolean flgExists = mFilters.get(sliceFilter);
-			if(flgExists==null)
-				System.out.println("Filter added: " + sliceFilter);
+//			if(flgExists==null)
+//				System.out.println("Filter added: " + sliceFilter);
 			
 			mFilters.put(sliceFilter, true);
 			
@@ -381,7 +383,7 @@ public class VcxprojSync
 	{
 		try
 		{
-			File outFile = new File(mProjFile + "-qsync.vcxproj");
+			File outFile = new File(mProjFile + "");
 			if(!outFile.exists()) outFile.createNewFile();
 			
 			// HEADER ///////
@@ -474,7 +476,7 @@ public class VcxprojSync
 	{
 		try
 		{
-			File outFile = new File(mProjFile + "-qsync.vcxproj.filters");
+			File outFile = new File(mFilterFile + "");
 			if(!outFile.exists()) outFile.createNewFile();
 			
 			// HEADER ///////

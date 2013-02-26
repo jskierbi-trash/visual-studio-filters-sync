@@ -69,6 +69,8 @@ public class VcxprojClItem
 	
 	public void setRelativePath(String path)
 	{
+		if(path.matches(".*TrackerMisc.*"))
+			System.out.println("");
 		mFileRelativePath = path;
 	}
 	

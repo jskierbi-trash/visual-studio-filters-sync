@@ -2,6 +2,7 @@ package com.programmingteam.qsync;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.UnsupportedAddressTypeException;
 import java.util.ArrayList;
 
 import javax.management.modelmbean.XMLParseException;
@@ -100,13 +101,19 @@ public class QSync
 					Node importNode = importList.item(j);
 					if(!importNode.getNodeName().equals("import")) continue;
 
-					String toFilter = importNode.getAttributes().getNamedItem("tofilter").getNodeValue();
+					Node importNodeAttrs;
+					if( (importNodeAttrs = importNode.getAttributes().getNamedItem("tofilter")) == null)
+						throw new XMLParseException("<import> has no tofilter attribute");
+					String toFilter =importNodeAttrs.getNodeValue();
 					toFilter = Helpers.fixSlashes(toFilter);
 					toFilter = Helpers.stripSlashes(toFilter);
 					if(toFilter.length()==0 || !toFilter.matches("[a-zA-Z0-9 ]*(\\\\[a-zA-Z0-9 ]*)*"))
 						throw new XMLParseException("tofilter attribute of <import> is not valid");
 					
 					QSyncImport imp = new QSyncImport(toFilter);
+					
+					if( (importNodeAttrs = importNode.getAttributes().getNamedItem("includeEmptyDirs")) != null)
+						imp.setIncludeEmptyDirs(importNodeAttrs.getNodeValue().toLowerCase().equals("true"));
 					
 					NodeList importIncludesList = importNode.getChildNodes();
 					if(importIncludesList.getLength()==0)
@@ -123,42 +130,54 @@ public class QSync
 						
 						if(includeNode.getNodeName().equals("include"))
 						{
+							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
+							
 							Node attrNode;
 							if( (attrNode=includeNode.getAttributes().getNamedItem("accept"))!=null )
 								imp.setRegexpInclude(attrNode.getNodeValue());
 							if( (attrNode=includeNode.getAttributes().getNamedItem("exclude"))!=null )
 								imp.setExcludeInc(attrNode.getNodeValue());
 							
-							if(inc) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <include> elements");
-							if(includeNode.getFirstChild()==null) throw new XMLParseException("<include> element is empty."); 
-							inc = true;
-							String includePath = includeNode.getFirstChild().getNodeValue().trim();
-							includePath = Helpers.resolvePath(mPwd.getAbsolutePath(), includePath);
-							imp.setInclude(includePath);
+							if( (attrNode=includeNode.getAttributes().getNamedItem("dir"))!=null )
+							{
+								String includePath = attrNode.getNodeValue().trim();
+								includePath = Helpers.resolvePath(mPwd.getAbsolutePath(), includePath);
+								imp.setInclude(includePath);
+								inc = true;
+							}
+							else
+								throw new XMLParseException("<include> has no dir attribute");
 						}
 						else if(includeNode.getNodeName().equals("src"))
 						{
+							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
+						
 							Node attrNode;
-							if( (attrNode=includeNode.getAttributes().getNamedItem("regexp"))!=null)
+							if( (attrNode=includeNode.getAttributes().getNamedItem("accept"))!=null)
 								imp.setRegexpSrc(attrNode.getNodeValue());
 							if( (attrNode=includeNode.getAttributes().getNamedItem("exclude"))!=null )
 								imp.setExcludeSrc(attrNode.getNodeValue());
 							
-							if(src) throw new XMLParseException("<import tofilter="+toFilter+"> has multiple <src> elements");
-							if(includeNode.getFirstChild()==null) throw new XMLParseException("<src> element is empty");
-							src = true;
-							String srcPath = includeNode.getFirstChild().getNodeValue().trim();
-							srcPath = Helpers.resolvePath(mPwd.getAbsolutePath(), srcPath);
-							imp.setSrc(srcPath);
+							if( (attrNode=includeNode.getAttributes().getNamedItem("dir"))!=null )
+							{
+								String srcPath = attrNode.getNodeValue().trim();
+								srcPath = Helpers.resolvePath(mPwd.getAbsolutePath(), srcPath);
+								imp.setSrc(srcPath);
+								src = true;
+							}
+							else
+								throw new XMLParseException("<src> has no dir attribute");
+							
 						}
 						else if(includeNode.getNodeName().equals("misc"))
 						{
 							// TODO set regexp
+							throw new UnsupportedAddressTypeException();
 							
-							if(includeNode.getFirstChild()==null) throw new XMLParseException("<misc> element is empty");
-							String miscPath = includeNode.getFirstChild().getNodeValue();
-							miscPath = Helpers.resolvePath(mPwd.getAbsolutePath(), miscPath);
-							imp.addMisc(miscPath);
+//							if(includeNode.getFirstChild()==null) throw new XMLParseException("<misc> element is empty");
+//							String miscPath = includeNode.getFirstChild().getNodeValue();
+//							miscPath = Helpers.resolvePath(mPwd.getAbsolutePath(), miscPath);
+//							imp.addMisc(miscPath);
 						}
 						else
 						{

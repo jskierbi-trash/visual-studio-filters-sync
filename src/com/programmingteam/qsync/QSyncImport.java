@@ -25,6 +25,8 @@ public class QSyncImport
 	private String mRegexpExcludeInc;
 	private String mRegexpExcludeSrc;
 	
+	private boolean mIncludeEmptyDirs =false;
+	
 	private List<String> mMisc;
 	
 	///
@@ -97,6 +99,11 @@ public class QSyncImport
 		}
 	}
 	
+	public void setIncludeEmptyDirs(boolean include)
+	{
+		mIncludeEmptyDirs = include;
+	}
+
 	///
 	/// \biref sets absolute path to misc folder
 	/// \param[in] String absolute path to include folder to be imported
@@ -136,7 +143,7 @@ public class QSyncImport
 	}
 
 	public boolean isExcludedInc(String file)
-	{
+	{		
 		if(mRegexpExcludeInc==null) return false;
 		else return file.matches(mRegexpExcludeInc);
 	}
@@ -145,6 +152,11 @@ public class QSyncImport
 	{
 		if(mRegexpExcludeSrc==null) return false;
 		else return file.matches(mRegexpExcludeSrc);
+	}
+	
+	public boolean isIncludeEmptyDirs()
+	{
+		return mIncludeEmptyDirs;
 	}
 	
 	///
