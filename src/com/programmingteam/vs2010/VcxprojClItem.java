@@ -95,6 +95,20 @@ public class VcxprojClItem
 		this.mFlgDeleted = flgDeleted;
 	}
 	
+	public String getFilter()
+	{
+		for(int i=0; i<mFilterLines.size(); ++i)
+		{
+			String s = mFilterLines.get(i);
+			if(s.matches(".*<Filter>.*</Filter>.*"))
+			{
+				return s.substring(s.indexOf('>')+1, s.lastIndexOf('<'));
+			}
+		}
+		
+		return null;
+	}
+	
 	public void setExcludeFromBuild(ArrayList<String> log)
 	{
 		for(String s: mProjLines)

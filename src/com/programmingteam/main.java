@@ -102,8 +102,7 @@ public class Main
 							}
 						}
 					}
-					vcxprojSync.printLog();
-					vcxprojSync.clearLog();
+					vcxprojSync.printLog(imp.getToFilter());
 				}
 					
 				//TODO save files!

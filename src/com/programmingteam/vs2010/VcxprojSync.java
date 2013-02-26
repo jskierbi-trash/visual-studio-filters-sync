@@ -323,9 +323,12 @@ public class VcxprojSync
 	
 	private boolean detectFileMove(String file, String filter, HashMap<String, VcxprojClItem> container, boolean isExcluded)
 	{
-		
 		VcxprojClItem movedItem =null;
 		String movedFilter = null;
+		
+		if(container.containsKey(file))
+			return false;
+		
 		for(Entry<String, VcxprojClItem> i: container.entrySet())
 		{	
 			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
@@ -439,7 +442,11 @@ public class VcxprojSync
 			out.newLine();
 			for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
 			{
-				if(i.getValue().getDeleted()) continue;
+				if(i.getValue().getDeleted()) 
+				{
+					logFileRemoved.add("Removed: " + i.getKey());
+					continue;
+				}
 				
 				List<String> projLines = i.getValue().getProjLines();
 				if(projLines==null || projLines.size()==0)
@@ -613,10 +620,31 @@ public class VcxprojSync
 		logFileMoved = new ArrayList<String>();
 		logFileExcluded = new ArrayList<String>();
 	}
-
-	public void printLog()
+	
+	private void addDeletedToLog(String baseFilter)
 	{
-		//TODO print logs
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+		{
+			if(i.getValue().getDeleted() && i.getValue().getFilter().startsWith(baseFilter))
+				logFileRemoved.add("Removed: " + i.getKey());
+		}
+		
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
+		{
+			if(i.getValue().getDeleted() && i.getValue().getFilter().startsWith(baseFilter))
+				logFileRemoved.add("Removed: " + i.getKey());
+		}
+		
+		for(Entry<String, Boolean> i: mFilters.entrySet())
+		{
+			if(!i.getValue())
+				logFilterRemoved.add("Filter removed: " + i.getKey());
+		}
+	}
+
+	public void printLog(String baseFilter)
+	{
+		addDeletedToLog(baseFilter);
 		for(String s: logFilterAdded) System.out.println(s);
 		for(String s: logFilterRemoved) System.out.println(s);
 
@@ -624,5 +652,6 @@ public class VcxprojSync
 		for(String s: logFileRemoved) System.out.println(s);
 		for(String s: logFileMoved) System.out.println(s);
 		for(String s: logFileExcluded) System.out.println(s);
+		clearLog();
 	}
 }
