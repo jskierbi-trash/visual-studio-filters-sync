@@ -69,8 +69,6 @@ public class VcxprojClItem
 	
 	public void setRelativePath(String path)
 	{
-		if(path.matches(".*TrackerMisc.*"))
-			System.out.println("");
 		mFileRelativePath = path;
 	}
 	
@@ -97,19 +95,18 @@ public class VcxprojClItem
 		this.mFlgDeleted = flgDeleted;
 	}
 	
-	public void setExcludeFromBuild()
+	public void setExcludeFromBuild(ArrayList<String> log)
 	{
-		System.out.print("Exclude from build: " + mFileRelativePath);
 		for(String s: mProjLines)
 		{
-			if(s.matches(".*<ExcludedFromBuild"))
+			if(s.matches(".*<ExcludedFromBuild.*"))
 			{
-				System.out.println(" File already excluded!");
+				//System.out.println(" File already excluded!");
 				return;
 			}
 		}
-		
-		System.out.println("Excluding.");
+		//System.out.println("Auto-exclude from build (by regexp): " + mFileRelativePath);
+		log.add("Auto-exclude from build (by regexp): " + mFileRelativePath);
 		mProjLines.add("      <ExcludedFromBuild>true</ExcludedFromBuild>");
 	}
 	

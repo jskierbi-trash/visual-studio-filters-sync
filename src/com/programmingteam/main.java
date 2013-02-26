@@ -70,12 +70,12 @@ public class Main
 								{
 									if(include && !imp.matchesInclue(listFiles[i].getName()))
 									{
-										System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
+										//System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
 										continue;
 									}
 									if(!include && !imp.matchesSrc(listFiles[i].getName()))
 									{
-										System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
+										//System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
 										continue;
 									}
 									
@@ -102,6 +102,8 @@ public class Main
 							}
 						}
 					}
+					vcxprojSync.printLog();
+					vcxprojSync.clearLog();
 				}
 					
 				//TODO save files!
