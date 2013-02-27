@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.programmingteam.Helpers;
+import com.programmingteam.Log;
 
 ///
 /// \brief Representation of project defined in qsync file
@@ -110,8 +111,8 @@ public class QSyncVcxproj
 	///
 	public void debugPrint()
 	{
-		System.out.println("vcxproj: " + mVcxproj);
-		System.out.println("vcxproj.filters: " + mVcxprojFilters);
+		Log.d("vcxproj: " + mVcxproj);
+		Log.d("vcxproj.filters: " + mVcxprojFilters);
 		for(QSyncImport imp: mImportList)
 		{
 			imp.debugPrint();

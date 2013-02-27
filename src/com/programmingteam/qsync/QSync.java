@@ -16,6 +16,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.programmingteam.Helpers;
+import com.programmingteam.Log;
 
 ///
 /// \brief qsync XML file representation
@@ -45,9 +46,9 @@ public class QSync
 					.newDocumentBuilder()
 					.parse(qsyncfile);
 		}
-		catch(ParserConfigurationException ex) { System.err.println("QSync: error creating XML configuration"); }
-		catch(SAXException ex) { System.err.println("Error reading document ("+qsyncfile.getName()+"): "+ex.getMessage()); }
-		catch(IOException ex) { System.err.println("IOException reading document ("+qsyncfile.getName()+")"); }	
+		catch(ParserConfigurationException ex) { Log.e("QSync: error creating XML configuration"); }
+		catch(SAXException ex) { Log.e("Error reading document ("+qsyncfile.getName()+"): "+ex.getMessage()); }
+		catch(IOException ex) { Log.e("IOException reading document ("+qsyncfile.getName()+")"); }	
 		
 		if(qsyncDoc==null) System.exit(-1); //If file couldn't be read, kill process
 		
@@ -81,10 +82,10 @@ public class QSync
 			mProjects = new ArrayList<QSyncVcxproj>();
 			NodeList vcxprojList = qsyncDoc.getElementsByTagName("vcxproj");
 			if(vcxprojList.getLength() == 0) throw new XMLParseException("no <vcxproj> elements found");
-			//System.out.println("vcxproj length: " + vcxprojList.getLength());
+			//Log.d("vcxproj length: " + vcxprojList.getLength());
 			for(int i=vcxprojList.getLength()-1; i>=0; --i)
 			{
-				//System.out.println("Project!");
+				//Log.d("Project!");
 				Node projNode = vcxprojList.item(i);
 				Element projElem = (Element) qsyncDoc.adoptNode(projNode);
 				String projFile = projElem.getAttribute("proj");
@@ -189,7 +190,7 @@ public class QSync
 				mProjects.add(proj);
 			}
 		}
-		catch(XMLParseException ex) { System.err.println("XMLParseExcepiton: " + ex.getMessage()); System.exit(-1); }
+		catch(XMLParseException ex) { Log.e("XMLParseExcepiton: " + ex.getMessage()); System.exit(-1); }
 	}
 	
 	///
@@ -225,10 +226,10 @@ public class QSync
 	///
 	public void debugPrint()
 	{
-		System.out.println("mIncludes: " + mIncludes);
-		System.out.println("mCompiles: " + mCompiles);
+		Log.v("mIncludes: " + mIncludes);
+		Log.v("mCompiles: " + mCompiles);
 		
-		System.out.println("mProjects ("+mProjects.size()+"):");
+		Log.v("mProjects ("+mProjects.size()+"):");
 		for(QSyncVcxproj proj: mProjects)
 			proj.debugPrint();
 	}

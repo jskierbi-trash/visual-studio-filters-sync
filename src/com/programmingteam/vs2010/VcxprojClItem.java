@@ -3,6 +3,8 @@ package com.programmingteam.vs2010;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.programmingteam.Log;
+
 public class VcxprojClItem
 {
 	ArrayList<String> mFilterLines;
@@ -46,7 +48,7 @@ public class VcxprojClItem
 			if( mFileRelativePath!=null && 
 				!mFileRelativePath.equals(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\""))))
 			{
-				System.err.println("Error: filter path not matches proj path!");
+				Log.e("Error: filter path not matches proj path!");
 				System.exit(-1);
 			}
 			return line.matches(".*/>.*");
@@ -115,11 +117,11 @@ public class VcxprojClItem
 		{
 			if(s.matches(".*<ExcludedFromBuild.*"))
 			{
-				//System.out.println(" File already excluded!");
+				//Log.d(" File already excluded!");
 				return;
 			}
 		}
-		//System.out.println("Auto-exclude from build (by regexp): " + mFileRelativePath);
+		//Log.d("Auto-exclude from build (by regexp): " + mFileRelativePath);
 		log.add("Auto-exclude: " + mFileRelativePath);
 		mProjLines.add("      <ExcludedFromBuild>true</ExcludedFromBuild>");
 	}
@@ -141,8 +143,8 @@ public class VcxprojClItem
 	
 	public void debugPrint()
 	{
-		System.out.println("  <ClInclude Include=\""+ mFileRelativePath +"\">");
-		for(String s: mProjLines) System.out.println(s);
-		for(String s: mFilterLines) System.out.println(s);
+		Log.d("  <ClInclude Include=\""+ mFileRelativePath +"\">");
+		for(String s: mProjLines) Log.d(s);
+		for(String s: mFilterLines) Log.d(s);
 	}
 }

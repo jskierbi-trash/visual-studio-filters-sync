@@ -11,110 +11,120 @@ import com.programmingteam.vs2010.VcxprojSync;
 
 public class Main
 {
-	public static void main(String[] args)
-	{		
-		File qsyncFile = new File(args[0]);
-		
-		if(args.length==1 && qsyncFile.exists())
-		{
-			//Read file
-			QSync qsync = new QSync(qsyncFile);
-			//System.out.println("Qsyn created ok.");
-			
-			List<QSyncVcxproj> qsyncProjs = qsync.getProjects();
-			for(QSyncVcxproj qsyncProj : qsyncProjs)
-			{
-				System.out.println(">>> Sync: " + qsyncProj.getVcxproj() + "");
-				VcxprojSync vcxprojSync = new VcxprojSync(qsyncProj.getVcxproj(), qsyncProj.getVcxprojFilters());
-				for(QSyncImport imp: qsyncProj.getImportList())
-				{
-					System.out.println("Parsing <import tofilter=\"" + imp.getToFilter() + "\">");
-					vcxprojSync.invalidateFilters(imp.getToFilter());
-					
-					ArrayList<File> dirList = new ArrayList<File>();
-					dirList.add(new File(imp.getInclude()));
-					dirList.add(new File(imp.getSrc()));
-					
-					while(dirList.size()>0)
-					{
-						File dir = dirList.get(0);
-						dirList.remove(0);
-						File listFiles[] = dir.listFiles();
-						if(listFiles==null)
-						{
-							System.err.println("Directory does not exist! " + dir);
-							System.exit(-1);
-						}
-						for(int i=0; i<listFiles.length; ++i)
-						{
-							if(listFiles[i].isDirectory())
-							{
-								dirList.add(listFiles[i]);
-								
-								if(imp.isIncludeEmptyDirs())
-								{
-									String toFilter = listFiles[i].getAbsolutePath()
-											.replace(imp.getInclude(), imp.getToFilter())
-											.replace(imp.getSrc(), imp.getToFilter());
+	public static Options OPTS;
 	
-									toFilter = Helpers.stripSlashes(toFilter);
-									vcxprojSync.syncFilter(toFilter);
-								}
-							}
-							else
+	public static void main(String[] args)
+	{	
+		OPTS = new Options(args);
+		
+		File qsyncFile = new File(OPTS.getFile());
+		if(!qsyncFile.exists())
+		{
+			Log.e("Configuration file not found (" + OPTS.getFile() + ")");
+			System.exit(-1);
+		}
+		
+		//Read file
+		QSync qsync = new QSync(qsyncFile);
+		qsync.debugPrint();
+		Log.v("Qsyn created ok.");
+		
+		List<QSyncVcxproj> qsyncProjs = qsync.getProjects();
+		for(QSyncVcxproj qsyncProj : qsyncProjs)
+		{
+			Log.d(">>> Sync: " + qsyncProj.getVcxproj() + "");
+			VcxprojSync vcxprojSync = new VcxprojSync(qsyncProj.getVcxproj(), qsyncProj.getVcxprojFilters());
+			for(QSyncImport imp: qsyncProj.getImportList())
+			{
+				Log.d("Parsing <import tofilter=\"" + imp.getToFilter() + "\">");
+				vcxprojSync.invalidateFilters(imp.getToFilter());
+				
+				ArrayList<File> dirList = new ArrayList<File>();
+				dirList.add(new File(imp.getInclude()));
+				dirList.add(new File(imp.getSrc()));
+				
+				while(dirList.size()>0)
+				{
+					File dir = dirList.get(0);
+					dirList.remove(0);
+					File listFiles[] = dir.listFiles();
+					if(listFiles==null)
+					{
+						Log.e("Directory does not exist! " + dir);
+						System.exit(-1);
+					}
+					for(int i=0; i<listFiles.length; ++i)
+					{
+						if(listFiles[i].isDirectory())
+						{
+							dirList.add(listFiles[i]);
+							
+							if(imp.isIncludeEmptyDirs())
 							{
-								//TODO add handling misc
-								boolean include =false;
-								if( Helpers.isCompile(listFiles[i], qsync.getCompileExt()) ||
-									(include=Helpers.isInclude(listFiles[i], qsync.getIncludeExt())))
+								String toFilter = listFiles[i].getAbsolutePath()
+										.replace(imp.getInclude(), imp.getToFilter())
+										.replace(imp.getSrc(), imp.getToFilter());
+
+								toFilter = Helpers.stripSlashes(toFilter);
+								vcxprojSync.syncFilter(toFilter);
+							}
+						}
+						else
+						{
+							//TODO add handling misc
+							boolean include =false;
+							if( Helpers.isCompile(listFiles[i], qsync.getCompileExt()) ||
+								(include=Helpers.isInclude(listFiles[i], qsync.getIncludeExt())))
+							{
+								if(include && !imp.matchesInclue(listFiles[i].getName()))
 								{
-									if(include && !imp.matchesInclue(listFiles[i].getName()))
-									{
-										//System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
-										continue;
-									}
-									if(!include && !imp.matchesSrc(listFiles[i].getName()))
-									{
-										//System.out.println("Skipping file: "+listFiles[i]+" (not matching regexp)");
-										continue;
-									}
-									
-									boolean isExcludedFromBuild = false;
-									if(include)
-										isExcludedFromBuild = imp.isExcludedInc(""+listFiles[i].getName());
-									else
-										isExcludedFromBuild = imp.isExcludedSrc(""+listFiles[i].getName());
-									
-									VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
-									if(include) syncType = VcxprojSync.SyncType.INCLUDE;
-									
-									String toFilter = listFiles[i].getAbsolutePath()
-											.replace(imp.getInclude(), imp.getToFilter())
-											.replace(imp.getSrc(), imp.getToFilter());
-									toFilter = Helpers.getPath(toFilter);
-									toFilter = Helpers.stripSlashes(toFilter);
-									vcxprojSync.syncFile(
-											qsyncProj.getRelativeFile(listFiles[i]), 
-											toFilter, 
-											syncType, 
-											isExcludedFromBuild);
+									Log.v("Skipping file: "+listFiles[i]+" (not matching regexp)");
+									continue;
 								}
+								if(!include && !imp.matchesSrc(listFiles[i].getName()))
+								{
+									Log.v("Skipping file: "+listFiles[i]+" (not matching regexp)");
+									continue;
+								}
+								
+								boolean isExcludedFromBuild = false;
+								if(include)
+									isExcludedFromBuild = imp.isExcludedInc(""+listFiles[i].getName());
+								else
+									isExcludedFromBuild = imp.isExcludedSrc(""+listFiles[i].getName());
+								
+								VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
+								if(include) syncType = VcxprojSync.SyncType.INCLUDE;
+								
+								String toFilter = listFiles[i].getAbsolutePath()
+										.replace(imp.getInclude(), imp.getToFilter())
+										.replace(imp.getSrc(), imp.getToFilter());
+								toFilter = Helpers.getPath(toFilter);
+								toFilter = Helpers.stripSlashes(toFilter);
+								vcxprojSync.syncFile(
+										qsyncProj.getRelativeFile(listFiles[i]), 
+										toFilter, 
+										syncType, 
+										isExcludedFromBuild);
 							}
 						}
 					}
-					vcxprojSync.printLog(imp.getToFilter());
 				}
-					
-				//TODO save files!
-				vcxprojSync.saveVcxproj();
-				vcxprojSync.saveVcxprojFilters();
-				System.out.println("Done.");
+				vcxprojSync.printLog(imp.getToFilter());
 			}
+				
+			//TODO save files!
+			if(!OPTS.isPretend())
+			{
+				vcxprojSync.saveVcxproj(OPTS.getOutput());
+				vcxprojSync.saveVcxprojFilters(OPTS.getOutput());
+			}
+			else
+			{
+				Log.d("Pretend option: skipping file save...");
+			}
+			Log.d("Done.");
 		}
-		else
-		{
-			//Run UI
-			System.err.println("App does not have any UI...");
-		}
+
 	}
 }

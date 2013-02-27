@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.programmingteam.Helpers;
+import com.programmingteam.Log;
 
 ///
 /// \brief Visual 2010 project representation
@@ -152,10 +153,10 @@ public class VcxprojSync
 				}
 			}
 		}
-		catch (ParseException e) { System.err.println("Parse excepiton: " + e.getMessage()); System.exit(-1); }
-		catch (FileNotFoundException e) { System.err.println("File not found: " + mProjFile); System.exit(-1); }
-		catch (IOException e) { System.err.println("IOException reading file: " + mProjFile); System.exit(-1); }
-		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
+		catch (ParseException e) { Log.e("Parse excepiton: " + e.getMessage()); System.exit(-1); }
+		catch (FileNotFoundException e) { Log.e("File not found: " + mProjFile); System.exit(-1); }
+		catch (IOException e) { Log.e("IOException reading file: " + mProjFile); System.exit(-1); }
+		finally { try { if(in!=null) in.close(); } catch (IOException e) { Log.e("IOException closing file"); }}
 		
 		if(noEndprojTag)
 			mVcxFooter.add("</Project>");
@@ -241,8 +242,7 @@ public class VcxprojSync
 						{
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
-//							System.err.println("Could not find ClItem element for filter file!");
-//							System.exit(-1);
+							Log.v("Filter ClInclude not matches any vcxproj include");
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -257,8 +257,7 @@ public class VcxprojSync
 						{
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
-//							System.err.println("Could not find ClItem element for filter file!");
-//							System.exit(-1);
+							Log.v("Filter ClCompile not matches any vcxproj include");
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -266,10 +265,10 @@ public class VcxprojSync
 				}
 			}
 		}
-		catch (ParseException e) { System.err.println("Parse excepiton: " + e.getMessage()); System.exit(-1); }
-		catch (FileNotFoundException ex) { System.err.println("File not found: " + mFilterFile); System.exit(-1); }
-		catch (IOException ex) { System.err.println("IOException reading file: " + mFilterFile); System.exit(-1); }
-		finally { try { if(in!=null) in.close(); } catch (IOException e) { System.err.println("IOException closing file"); }}
+		catch (ParseException e) { Log.e("Parse excepiton: " + e.getMessage()); System.exit(-1); }
+		catch (FileNotFoundException ex) { Log.e("File not found: " + mFilterFile); System.exit(-1); }
+		catch (IOException ex) { Log.e("IOException reading file: " + mFilterFile); System.exit(-1); }
+		finally { try { if(in!=null) in.close(); } catch (IOException e) { Log.e("IOException closing file"); }}
 	
 		if(noEndprojTag)
 			mFilterFooter.add("</Project>");
@@ -284,7 +283,7 @@ public class VcxprojSync
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
 			{
-//				System.out.println("MARK DELETED: " + i.getKey());
+				Log.v("MARK DELETED: " + i.getKey());
 				i.getValue().setDeleted(true);
 			}
 		}
@@ -294,7 +293,7 @@ public class VcxprojSync
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
 			{
-//				System.out.println("MARK DELETED: " + i.getKey());
+				Log.v("MARK DELETED: " + i.getKey());
 				i.getValue().setDeleted(true);
 			}
 		}
@@ -358,13 +357,6 @@ public class VcxprojSync
 			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
 			{
 				moveCandidates.add(i.getKey());
-				
-//				if(movedItem!=null)
-//				{
-//					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
-//					System.err.println("\tConflict: "+ movedItem.getFilePath() + " VS. " + i.getKey() + "");
-//					System.exit(-1);
-//				}
 
 				movedFilter = i.getKey();
 				logFileMoved.add("Move from: " + i.getValue().getFilePath() + " to: "+file);
@@ -378,8 +370,8 @@ public class VcxprojSync
 
 		if(moveCandidates.size()>1)
 		{
-			System.err.println("Error! File " + file + " ambigious move, from candidates:");
-			for(String s: moveCandidates) System.err.println("\t" + s);
+			Log.e("Error! File " + file + " ambigious move, from candidates:");
+			for(String s: moveCandidates) Log.e("\t" + s);
 			System.exit(-1);
 		}
 		
@@ -422,11 +414,16 @@ public class VcxprojSync
 		}
 	}
 	
-	public void saveVcxproj()
+	public void saveVcxproj(String outStr)
 	{
 		try
 		{
-			File outFile = new File(mProjFile + "");
+			File outFile;
+			if(outStr==null)
+				outFile = mProjFile;
+			else
+				outFile = new File(outStr + ".vcxproj");
+			
 			if(!outFile.exists()) outFile.createNewFile();
 			
 			// HEADER ///////
@@ -514,16 +511,21 @@ public class VcxprojSync
 		}
 		catch (IOException e)
 		{
-			System.err.println("IOException while saving file! (" + e.getMessage() + ")");
+			Log.e("IOException while saving file! (" + e.getMessage() + ")");
 			e.printStackTrace();
 		}
 	}
 	
-	public void saveVcxprojFilters()
+	public void saveVcxprojFilters(String outStr)
 	{
 		try
 		{
-			File outFile = new File(mFilterFile + "");
+			File outFile;
+			if(outStr==null)
+				outFile = mFilterFile;
+			else
+				outFile = new File(outStr + ".vcxproj.filters");
+			
 			if(!outFile.exists()) outFile.createNewFile();
 			
 			// HEADER ///////
@@ -609,38 +611,37 @@ public class VcxprojSync
 		}
 		catch (IOException e)
 		{
-			System.err.println("IOException while saving file! (" + e.getMessage() + ")");
+			Log.e("IOException while saving file! (" + e.getMessage() + ")");
 			e.printStackTrace();
 		}
 	}
 	
 	public void debugPrint()
 	{
-		System.out.println(">>> VCX HEADER <<<");
-		for(String s: mVcxHeader) System.out.println(s);
-		System.out.println("");
-		System.out.println(">>> VCX FOOTER <<<");
-		for(String s: mVcxFooter) System.out.println(s);
+		Log.v(">>> VCX HEADER <<<");
+		for(String s: mVcxHeader) Log.d(s);
+		Log.v("");
+		Log.v(">>> VCX FOOTER <<<");
+		for(String s: mVcxFooter) Log.d(s);
 		
-		System.out.println("");
-		System.out.println(">>> Filter HEADER <<<");
-		for(String s: mFilterHeader) System.out.println(s);
-		System.out.println("");
-		System.out.println(">>> Filter FOOTER <<<");
-		for(String s: mFilterFooter) System.out.println(s);
+		Log.v("");
+		Log.v(">>> Filter HEADER <<<");
+		for(String s: mFilterHeader) Log.d(s);
+		Log.v("");
+		Log.v(">>> Filter FOOTER <<<");
+		for(String s: mFilterFooter) Log.d(s);
 		
-		System.out.println("");
-		System.out.println(">>> Filters <<<");
-		for(Entry<String, Boolean> i: mFilters.entrySet()) System.out.println("["+i.getValue()+"]" +i.getKey());
+		Log.v("");
+		Log.v(">>> Filters <<<");
+		for(Entry<String, Boolean> i: mFilters.entrySet()) Log.d("["+i.getValue()+"]" +i.getKey());
 		
-//		System.out.println("");
-//		System.out.println("ClIncludes:");
-//		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
-//		
-//		System.out.println("");
-//		System.out.println("ClCompiles:");
-//		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
+		Log.v("");
+		Log.v("ClIncludes:");
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet()) i.getValue().debugPrint();
 		
+		Log.v("");
+		Log.v("ClCompiles:");
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
 	}
 
 	public void clearLog()
@@ -665,7 +666,7 @@ public class VcxprojSync
 		
 		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
 		{
-			if(i.getValue().getDeleted() && i.getValue().getFilter().startsWith(baseFilter))
+			if(i.getValue().getDeleted() && i.getValue().getFilter()!=null && i.getValue().getFilter().startsWith(baseFilter))
 				logFileRemoved.add("Removed: " + i.getKey());
 		}
 		
@@ -679,14 +680,14 @@ public class VcxprojSync
 	public void printLog(String baseFilter)
 	{
 		addDeletedToLog(baseFilter);
-		for(String s: logFilterAdded) System.out.println(s);
-		for(String s: logFilterRemoved) System.out.println(s);
+		for(String s: logFilterAdded) Log.d(s);
+		for(String s: logFilterRemoved) Log.d(s);
 
-		for(String s: logFileAdded) System.out.println(s);
-		for(String s: logFileMoved) System.out.println(s);
-		for(String s: logFileRemoved) System.out.println(s);
-		for(String s: logFileFilterMoved) System.out.println(s);
-		for(String s: logFileExcluded) System.out.println(s);
+		for(String s: logFileAdded) Log.d(s);
+		for(String s: logFileMoved) Log.d(s);
+		for(String s: logFileRemoved) Log.d(s);
+		for(String s: logFileFilterMoved) Log.d(s);
+		for(String s: logFileExcluded) Log.d(s);
 		clearLog();
 	}
 }

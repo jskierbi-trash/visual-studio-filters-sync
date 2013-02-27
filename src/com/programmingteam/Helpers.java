@@ -109,7 +109,7 @@ public class Helpers
 		String output = file.replace('/','\\');
 		output = output.replace("\\\\","\\");
 		output = output.replace("\\\\","\\");
-		//System.out.println(output);
+		//Log.d(output);
 		
 		if(output.charAt(0)=='\\') 
 			output=output.substring(1, output.length());
@@ -163,7 +163,7 @@ public class Helpers
 				String resolved = System.getenv(varToResolve);
 				if(resolved == null)
 				{
-					System.err.println("Could not resolve environment variable: ${" + varToResolve + "}");
+					Log.e("Could not resolve environment variable: ${" + varToResolve + "}");
 					System.exit(-1);
 				}
 				

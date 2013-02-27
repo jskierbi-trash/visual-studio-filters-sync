@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.programmingteam.Log;
+
 ///
 /// \brief representation of single import to vcxproj/filters files
 /// Single import contains of:
@@ -61,7 +63,7 @@ public class QSyncImport
 		try { Pattern.compile(mRegexpInclude); }
 		catch (PatternSyntaxException e) 
 		{  
-			System.err.println("Error parsing regular expression (" + mRegexpInclude + ") " + e.getMessage());
+			Log.e("Error parsing regular expression (" + mRegexpInclude + ") " + e.getMessage());
 			System.exit(-1);
 		}
 	}
@@ -72,7 +74,7 @@ public class QSyncImport
 		try { Pattern.compile(mRegexpSrc); }
 		catch (PatternSyntaxException e) 
 		{  
-			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
+			Log.e("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
 			System.exit(-1);
 		}
 	}
@@ -83,7 +85,7 @@ public class QSyncImport
 		try { Pattern.compile(mRegexpExcludeSrc); }
 		catch (PatternSyntaxException e) 
 		{  
-			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
+			Log.e("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
 			System.exit(-1);
 		}
 	}
@@ -94,7 +96,7 @@ public class QSyncImport
 		try { Pattern.compile(mRegexpExcludeInc); }
 		catch (PatternSyntaxException e) 
 		{  
-			System.err.println("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
+			Log.e("Error parsing regular expression (" + mRegexpSrc + ") " + e.getMessage());
 			System.exit(-1);
 		}
 	}
@@ -172,12 +174,15 @@ public class QSyncImport
 	///
 	public void debugPrint()
 	{
-		System.out.println("mToFilter: " + mToFilter);
-		System.out.println("\tmInclude: " + mInclude);
-		System.out.println("\tmSrc: " + mSrc);
+		Log.v("mToFilter: " + mToFilter);
+		Log.v("\tmIncludeEmptyDirs: " + mIncludeEmptyDirs);
+		Log.v("\tmInclude: " + mInclude);
+		Log.v("\tmRegexpInclude: " + mRegexpInclude);
+		Log.v("\tmRegexpExcludeInc: " + mRegexpExcludeInc);
+		Log.v("\tmSrc: " + mSrc);
+		Log.v("\tmRegexpSrc: " + mRegexpSrc);
+		Log.v("\tmRegexpExcludeSrc: " + mRegexpExcludeSrc);
 		for(String s: mMisc)
-		{
-			System.out.println("\tMisc: " + s);
-		}
+			Log.v("\tMisc: " + s);
 	}
 }
