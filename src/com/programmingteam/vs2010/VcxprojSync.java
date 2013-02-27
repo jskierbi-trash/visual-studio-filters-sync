@@ -48,6 +48,7 @@ public class VcxprojSync
 	private ArrayList<String> logFileRemoved;
 	private ArrayList<String> logFileMoved;
 	private ArrayList<String> logFileExcluded;
+	private ArrayList<String> logFileFilterMoved;
 	
 	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
@@ -282,14 +283,20 @@ public class VcxprojSync
 		{
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
+			{
+				System.out.println("MARK DELETED: " + f);
 				i.getValue().setDeleted(true);
+			}
 		}
 		
 		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
 		{
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
+			{
+				System.out.println("MARK DELETED: " + f);
 				i.getValue().setDeleted(true);
+			}
 		}
 	}
 	
@@ -307,7 +314,7 @@ public class VcxprojSync
 		
 		if(item==null && !fileMoved)
 		{
-			logFileAdded.add("Add: " + relativeFile);
+			logFileAdded.add("Added: " + relativeFile);
 			item = new VcxprojClItem();
 			item.setDeleted(false);
 			item.setRelativePath(relativeFile);
@@ -321,7 +328,18 @@ public class VcxprojSync
 		{
 			if(isExcluded) item.setExcludeFromBuild(logFileExcluded);
 			item.setDeleted(false);
+			if(!item.getFilter().equals(filter))
+			{
+				File f = new File(item.getFilePath());
+				logFileFilterMoved.add("Sync filter "+f.getName() + 
+						": (" + item.getFilter() + 
+						") => (" + filter + ")");
+			}
+			
 			item.setFilter(filter);
+			
+			if(SyncType.COMPILE==type) mClCompileItems.put(relativeFile, item);
+			if(SyncType.INCLUDE==type) mClIncludeItems.put(relativeFile, item);
 		}
 	}
 	
@@ -330,9 +348,11 @@ public class VcxprojSync
 		VcxprojClItem movedItem =null;
 		String movedFilter = null;
 		
-		if(container.containsKey(file))
+		if((movedItem=container.get(file))!=null && !movedItem.getDeleted())
 			return false;
 		
+		
+		movedItem =null;
 		for(Entry<String, VcxprojClItem> i: container.entrySet())
 		{	
 			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
@@ -340,7 +360,7 @@ public class VcxprojSync
 				if(movedItem!=null)
 				{
 					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
-					System.err.println("\tConflict: "+movedItem.getFilePath()+" VS. "+file+"");
+					System.err.println("\tConflict: "+ movedItem.getFilePath() + " VS. " + i.getKey() + "");
 					System.exit(-1);
 				}
 
@@ -372,7 +392,7 @@ public class VcxprojSync
 			Boolean flgExists = mFilters.get(sliceFilter);
 			if(flgExists==null)
 			{
-				logFilterAdded.add("Filter added: " + sliceFilter);
+				logFilterAdded.add("Filter added: (" + sliceFilter +")");
 			}
 			
 			mFilters.put(sliceFilter, true);
@@ -521,7 +541,7 @@ public class VcxprojSync
 				}
 				else
 				{
-					logFilterRemoved.add("Filter removed: " + i.getKey());
+					logFilterRemoved.add("Filter removed: (" + i.getKey() +")");
 				}
 			}
 			out.write("  </ItemGroup>");
@@ -623,6 +643,7 @@ public class VcxprojSync
 		logFileRemoved = new ArrayList<String>();
 		logFileMoved = new ArrayList<String>();
 		logFileExcluded = new ArrayList<String>();
+		logFileFilterMoved = new ArrayList<String>();
 	}
 	
 	private void addDeletedToLog(String baseFilter)
@@ -642,7 +663,7 @@ public class VcxprojSync
 		for(Entry<String, Boolean> i: mFilters.entrySet())
 		{
 			if(!i.getValue())
-				logFilterRemoved.add("Filter removed: " + i.getKey());
+				logFilterRemoved.add("Filter removed: (" + i.getKey() + ")");
 		}
 	}
 
@@ -653,8 +674,9 @@ public class VcxprojSync
 		for(String s: logFilterRemoved) System.out.println(s);
 
 		for(String s: logFileAdded) System.out.println(s);
-		for(String s: logFileRemoved) System.out.println(s);
 		for(String s: logFileMoved) System.out.println(s);
+		for(String s: logFileRemoved) System.out.println(s);
+		for(String s: logFileFilterMoved) System.out.println(s);
 		for(String s: logFileExcluded) System.out.println(s);
 		clearLog();
 	}

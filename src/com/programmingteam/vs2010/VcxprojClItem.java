@@ -120,7 +120,7 @@ public class VcxprojClItem
 			}
 		}
 		//System.out.println("Auto-exclude from build (by regexp): " + mFileRelativePath);
-		log.add("Auto-exclude from build (by regexp): " + mFileRelativePath);
+		log.add("Auto-exclude: " + mFileRelativePath);
 		mProjLines.add("      <ExcludedFromBuild>true</ExcludedFromBuild>");
 	}
 	

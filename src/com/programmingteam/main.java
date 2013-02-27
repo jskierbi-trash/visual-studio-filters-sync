@@ -108,6 +108,7 @@ public class Main
 				//TODO save files!
 				vcxprojSync.saveVcxproj();
 				vcxprojSync.saveVcxprojFilters();
+				System.out.println("Done.");
 			}
 		}
 		else
