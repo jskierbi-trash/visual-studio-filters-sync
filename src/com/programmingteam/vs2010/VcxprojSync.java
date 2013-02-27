@@ -284,7 +284,7 @@ public class VcxprojSync
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
 			{
-				System.out.println("MARK DELETED: " + f);
+//				System.out.println("MARK DELETED: " + i.getKey());
 				i.getValue().setDeleted(true);
 			}
 		}
@@ -294,7 +294,7 @@ public class VcxprojSync
 			File f = new File(basePath + i.getKey());
 			if(!f.exists())
 			{
-				System.out.println("MARK DELETED: " + f);
+//				System.out.println("MARK DELETED: " + i.getKey());
 				i.getValue().setDeleted(true);
 			}
 		}
@@ -351,18 +351,20 @@ public class VcxprojSync
 		if((movedItem=container.get(file))!=null && !movedItem.getDeleted())
 			return false;
 		
-		
 		movedItem =null;
+		ArrayList<String> moveCandidates = new ArrayList<String>();
 		for(Entry<String, VcxprojClItem> i: container.entrySet())
 		{	
 			if(i.getValue().getDeleted() && Helpers.compFiles(i.getKey(), file))
 			{
-				if(movedItem!=null)
-				{
-					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
-					System.err.println("\tConflict: "+ movedItem.getFilePath() + " VS. " + i.getKey() + "");
-					System.exit(-1);
-				}
+				moveCandidates.add(i.getKey());
+				
+//				if(movedItem!=null)
+//				{
+//					System.err.println("Error! Ambigious file move:" + movedItem.getFilePath() + "");
+//					System.err.println("\tConflict: "+ movedItem.getFilePath() + " VS. " + i.getKey() + "");
+//					System.exit(-1);
+//				}
 
 				movedFilter = i.getKey();
 				logFileMoved.add("Move from: " + i.getValue().getFilePath() + " to: "+file);
@@ -374,6 +376,13 @@ public class VcxprojSync
 			}
 		}
 
+		if(moveCandidates.size()>1)
+		{
+			System.err.println("Error! File " + file + " ambigious move, from candidates:");
+			for(String s: moveCandidates) System.err.println("\t" + s);
+			System.exit(-1);
+		}
+		
 		if(movedItem!=null)
 		{
 			container.remove(movedFilter);
