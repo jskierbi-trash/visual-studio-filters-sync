@@ -111,8 +111,8 @@ public class QSyncVcxproj
 	///
 	public void debugPrint()
 	{
-		Log.d("vcxproj: " + mVcxproj);
-		Log.d("vcxproj.filters: " + mVcxprojFilters);
+		Log.v("vcxproj: " + mVcxproj);
+		Log.v("vcxproj.filters: " + mVcxprojFilters);
 		for(QSyncImport imp: mImportList)
 		{
 			imp.debugPrint();

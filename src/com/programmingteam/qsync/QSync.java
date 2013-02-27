@@ -226,11 +226,13 @@ public class QSync
 	///
 	public void debugPrint()
 	{
+		Log.v(">>>> QSync <<<<");
 		Log.v("mIncludes: " + mIncludes);
 		Log.v("mCompiles: " + mCompiles);
 		
 		Log.v("mProjects ("+mProjects.size()+"):");
 		for(QSyncVcxproj proj: mProjects)
 			proj.debugPrint();
+		Log.v("^^^^^^^^^^");
 	}
 }

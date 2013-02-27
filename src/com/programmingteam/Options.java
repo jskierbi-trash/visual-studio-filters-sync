@@ -55,11 +55,7 @@ public class Options
 			
 			file = args[i];
 			if(i!=args.length-1)
-			{
-				Log.d("Invalid options after input file");
-				printUsage();
-				System.exit(-1);
-			}
+				commandError("Invalid options after input file");
 		}
 		
 		if(file==null)
@@ -99,7 +95,7 @@ public class Options
 
 	void commandError(String msg)
 	{
-		Log.d(msg);
+		System.out.println(msg);
 		printUsage();
 		System.exit(-1);
 	}
@@ -107,15 +103,15 @@ public class Options
 	
 	void printUsage()
 	{
-		Log.d("Usage: QubicSync [OPTION]... FILE");
-		Log.d("Synchronizes Visual Studio project files (*.vcxproj and ");
-		Log.d(" *.vcxproj.filters) with filesystem using config file.");
-		Log.d("");
-		Log.d("  -o, --output <file>  generates output to specified file");
-		Log.d("  -p, --pretend        create no output file, only synchronization logs");
-		Log.d("  -q, --quiet          disable console output");
-		Log.d("  -v, --verbose        show diagnostic logs");
-		Log.d("  -h, --help           shows this help");
-		Log.d("");
+		System.out.println("Usage: QubicSync [OPTION]... FILE");
+		System.out.println("Synchronizes Visual Studio project files (*.vcxproj and ");
+		System.out.println(" *.vcxproj.filters) with filesystem using config file.");
+		System.out.println("");
+		System.out.println("  -o, --output <file>  generates output to specified file");
+		System.out.println("  -p, --pretend        create no output file, only synchronization logs");
+		System.out.println("  -q, --quiet          disable console output");
+		System.out.println("  -v, --verbose        show diagnostic logs");
+		System.out.println("  -h, --help           shows this help");
+		System.out.println("");
 	}
 }

@@ -642,6 +642,7 @@ public class VcxprojSync
 		Log.v("");
 		Log.v("ClCompiles:");
 		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet()) i.getValue().debugPrint();
+		Log.v("^^^^^^^^^^");
 	}
 
 	public void clearLog()

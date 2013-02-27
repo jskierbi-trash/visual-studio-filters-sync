@@ -12,8 +12,8 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <javaElement handleIdentifier="=QubicSyncForCWay/src"/>
-        <file path="/QubicSyncForCWay/.classpath"/>
         <file path="/QubicSyncForCWay/.gitignore"/>
+        <file path="/QubicSyncForCWay/.classpath"/>
         <file path="/QubicSyncForCWay/.project"/>
     </selectedElements>
 </jardesc>
