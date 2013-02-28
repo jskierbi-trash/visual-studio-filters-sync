@@ -40,8 +40,8 @@ public class Main
 				vcxprojSync.invalidateFilters(imp.getToFilter());
 				
 				ArrayList<File> dirList = new ArrayList<File>();
-				dirList.add(new File(imp.getInclude()));
-				dirList.add(new File(imp.getSrc()));
+				if(imp.getInclude()!=null) dirList.add(new File(imp.getInclude()));
+				if(imp.getSrc()!=null) dirList.add(new File(imp.getSrc()));
 				
 				while(dirList.size()>0)
 				{
