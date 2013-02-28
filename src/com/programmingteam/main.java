@@ -117,6 +117,7 @@ public class Main
 			}
 				
 			//TODO save files!
+			vcxprojSync.checkFilters();
 			if(!OPTS.isPretend())
 			{
 				vcxprojSync.saveVcxproj(OPTS.getOutput());

@@ -289,6 +289,7 @@ public class VcxprojSync
 			{
 				logItemNoFilter.add("Item not found in .filters (.vcxproj only): " + i.getKey());
 				i.getValue().setFilter("_NOFILTER_");
+				mFilters.put("_NOFILTER_", true);
 			}
 		}
 		
@@ -298,8 +299,40 @@ public class VcxprojSync
 			{
 				logItemNoFilter.add("Item not found in .filters (.vcxproj only): " + i.getKey());
 				i.getValue().setFilter("_NOFILTER_");
+				mFilters.put("_NOFILTER_", true);
 			}
 		}
+	}
+	
+	public void checkFilters()
+	{
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+		{
+			boolean filterExists = mFilters.containsKey(i.getValue().getFilter());
+			boolean filterValid =true;
+			if(filterExists) filterValid = mFilters.get(i.getValue().getFilter());
+			if( !filterExists || (filterExists && !filterValid) )
+			{
+				logItemNoFilter.add("Moved to _NOFILTER_: " + i.getKey() + " (origin: " + i.getValue().getFilter() + ")");
+				i.getValue().setFilter("_NOFILTER_");
+				mFilters.put("_NOFILTER_", true);
+			}
+		}
+		
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
+		{
+			boolean filterExists = mFilters.containsKey(i.getValue().getFilter());
+			boolean filterValid =true;
+			if(filterExists) filterValid = mFilters.get(i.getValue().getFilter());
+			if( !filterExists || (filterExists && !filterValid) )
+			{
+				logItemNoFilter.add("Moved to _NOFILTER_: " + i.getKey() + " (origin: " + i.getValue().getFilter() + ")");
+				i.getValue().setFilter("_NOFILTER_");
+				mFilters.put("_NOFILTER_", true);
+			}
+		}
+		
+		for(String s: logItemNoFilter) Log.d(s);
 	}
 	
 	private void markDeletedFiles()
