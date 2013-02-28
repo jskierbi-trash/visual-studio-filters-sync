@@ -1,6 +1,7 @@
 package com.programmingteam;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class Main
 							
 							if(imp.isIncludeEmptyDirs())
 							{
-								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
+								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath()); 
 								toFilter = Helpers.stripSlashes(toFilter);
 								vcxprojSync.syncFilter(toFilter);
 							}
@@ -93,14 +94,21 @@ public class Main
 								VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
 								if(include) syncType = VcxprojSync.SyncType.INCLUDE;
 								
-								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
-								toFilter = Helpers.getPath(toFilter);
-								toFilter = Helpers.stripSlashes(toFilter);
-								vcxprojSync.syncFile(
-										qsyncProj.getRelativeFile(listFiles[i]), 
-										toFilter, 
-										syncType, 
-										isExcludedFromBuild);
+								try
+								{
+									String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
+									toFilter = Helpers.getPath(toFilter);
+									toFilter = Helpers.stripSlashes(toFilter);
+									vcxprojSync.syncFile(
+											qsyncProj.getRelativeFile(listFiles[i].getCanonicalPath()), 
+											toFilter, 
+											syncType, 
+											isExcludedFromBuild);
+								}
+								catch(IOException e)
+								{
+									Log.e("Error obtaining folder cannonical path!" + listFiles[i]); 
+								}
 							}
 						}
 					}

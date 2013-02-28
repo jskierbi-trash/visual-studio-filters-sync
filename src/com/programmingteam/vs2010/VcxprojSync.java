@@ -74,6 +74,7 @@ public class VcxprojSync
 		parseVcxproj();
 		parseFilters();
 		markDeletedFiles();
+		logNoFilters();
 	}
 
 	private void parseVcxproj()
@@ -246,7 +247,7 @@ public class VcxprojSync
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 							mClIncludeItems.put(item.getFilePath(), item);
-							logFilterNoItem.add("Found in filters, not present in vcxproj: " + item.getFilePath());
+							logFilterNoItem.add("Item not found in .vcxproj (.filters only): " + item.getFilePath());
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -263,7 +264,7 @@ public class VcxprojSync
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 							mClCompileItems.put(item.getFilePath(), item);
-							logFilterNoItem.add("Found in filters, not present in vcxproj: " + item.getFilePath());
+							logFilterNoItem.add("Item not found in .vcxproj (.filters only): " + item.getFilePath());
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -278,6 +279,27 @@ public class VcxprojSync
 	
 		if(noEndprojTag)
 			mFilterFooter.add("</Project>");
+	}
+	
+	private void logNoFilters()
+	{
+		for(Entry<String, VcxprojClItem> i: mClIncludeItems.entrySet())
+		{
+			if(!i.getValue().isFilterLines())
+			{
+				logItemNoFilter.add("Item not found in .filters (.vcxproj only): " + i.getKey());
+				i.getValue().setFilter("_NOFILTER_");
+			}
+		}
+		
+		for(Entry<String, VcxprojClItem> i: mClCompileItems.entrySet())
+		{
+			if(!i.getValue().isFilterLines())
+			{
+				logItemNoFilter.add("Item not found in .filters (.vcxproj only): " + i.getKey());
+				i.getValue().setFilter("_NOFILTER_");
+			}
+		}
 	}
 	
 	private void markDeletedFiles()

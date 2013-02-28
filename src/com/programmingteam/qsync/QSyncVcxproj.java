@@ -1,6 +1,7 @@
 package com.programmingteam.qsync;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.programmingteam.Helpers;
@@ -25,8 +26,16 @@ public class QSyncVcxproj
 	///
 	QSyncVcxproj(String proj, String filters)
 	{
-		mVcxproj = proj;
-		mVcxprojFilters = filters;
+		try
+		{
+			mVcxproj = new File(proj).getCanonicalPath();
+			mVcxprojFilters = new File(filters).getCanonicalPath();
+		}
+		catch (IOException e)
+		{
+			Log.e("IOException obtaining vcxproj/filters canonical path");
+			System.exit(-1);
+		}
 		mImportList = new ArrayList<QSyncImport>();
 		
 		mPwd = (new File(mVcxproj)).getParentFile();
@@ -76,9 +85,9 @@ public class QSyncVcxproj
 	/// \param[in] File absolute path to file to which relative path should be generated
 	/// \returns File relative path to file from vcxproj folder
 	///
-	public String getRelativeFile(File inFile)
+	public String getRelativeFile(String inFile)
 	{
-		String input = inFile.getAbsolutePath();
+		String input = inFile;
 		String proj =  mVcxproj;
 		
 		int offset = 0;

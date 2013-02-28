@@ -1,0 +1,18 @@
+<qubicsync version="1.0">
+	<ClInclude ext="h,hpp" />
+	<ClCompile ext="cpp,c" />
+
+	<!-- CWay -->
+	<vcxproj proj="${CWAY_DIR}/Project_Win/CWayEngine_Win.vcxproj">
+		<import tofilter="/Source Files/" includeEmptyDirs="false">
+			<include
+				dir="${CWAY_DIR}/include/CW/"
+				accept="^(?:(?!_[Tt]est\.(cpp|h)$).)*$"
+				exclude=".*_3[Dd][Ss].*" />
+			<src
+				dir="${CWAY_DIR}/src/CW/"
+				accept="^(?:(?!_[Tt]est\.(cpp|h)$).)*$"
+				exclude=".*_3[Dd][Ss].*" />
+		</import>
+	</vcxproj>
+</qubicsync>

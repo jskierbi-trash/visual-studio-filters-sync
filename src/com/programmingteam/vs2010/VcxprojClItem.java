@@ -14,11 +14,14 @@ public class VcxprojClItem
 	
 	boolean mFlgDeleted;
 	
+	boolean mFlgFilterLines;
+	
 	enum Ctx { PROJ, FILTER }
 	
 	public VcxprojClItem()
 	{
 		mFlgDeleted = false;
+		mFlgFilterLines = false;
 		mProjLines = new ArrayList<String>();
 		mFilterLines = new ArrayList<String>();
 	}
@@ -43,6 +46,7 @@ public class VcxprojClItem
 	
 	public boolean addFilterLine(String line)
 	{
+		mFlgFilterLines = true;
 		if(line.matches(".*<ClInclude .*") || line.matches(".*<ClCompile .*"))
 		{
 			if( mFileRelativePath!=null && 
@@ -146,5 +150,10 @@ public class VcxprojClItem
 		Log.d("  <ClInclude Include=\""+ mFileRelativePath +"\">");
 		for(String s: mProjLines) Log.d(s);
 		for(String s: mFilterLines) Log.d(s);
+	}
+	
+	public boolean isFilterLines()
+	{
+		return mFlgFilterLines;
 	}
 }
