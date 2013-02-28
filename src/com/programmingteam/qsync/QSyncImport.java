@@ -169,6 +169,17 @@ public class QSyncImport
 		return mSrc;
 	}
 	
+	public String getFileFilterPath(String file)
+	{		
+		if(mSrc!=null)
+			file = file.replace(mSrc, mToFilter);
+		
+		if(mInclude!=null)
+			file = file.replace(mInclude, mToFilter);
+		
+		return file;
+	}
+	
 	///
 	/// \brief prints all data contained in this object
 	///

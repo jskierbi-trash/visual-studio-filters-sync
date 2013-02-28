@@ -61,10 +61,7 @@ public class Main
 							
 							if(imp.isIncludeEmptyDirs())
 							{
-								String toFilter = listFiles[i].getAbsolutePath()
-										.replace(imp.getInclude(), imp.getToFilter())
-										.replace(imp.getSrc(), imp.getToFilter());
-
+								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
 								toFilter = Helpers.stripSlashes(toFilter);
 								vcxprojSync.syncFilter(toFilter);
 							}
@@ -96,9 +93,7 @@ public class Main
 								VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
 								if(include) syncType = VcxprojSync.SyncType.INCLUDE;
 								
-								String toFilter = listFiles[i].getAbsolutePath()
-										.replace(imp.getInclude(), imp.getToFilter())
-										.replace(imp.getSrc(), imp.getToFilter());
+								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
 								toFilter = Helpers.getPath(toFilter);
 								toFilter = Helpers.stripSlashes(toFilter);
 								vcxprojSync.syncFile(
