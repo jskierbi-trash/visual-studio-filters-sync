@@ -51,6 +51,9 @@ public class VcxprojSync
 	private ArrayList<String> logFileExcluded;
 	private ArrayList<String> logFileFilterMoved;
 	
+	private ArrayList<String> logFilterNoItem;
+	private ArrayList<String> logItemNoFilter;
+	
 	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
 		mProjFile = new File(vcxproj);
@@ -242,11 +245,13 @@ public class VcxprojSync
 						{
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
-							Log.v("Filter ClInclude not matches any vcxproj include");
+							mClIncludeItems.put(item.getFilePath(), item);
+							logFilterNoItem.add("Found in filters, not present in vcxproj: " + item.getFilePath());
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
 						item = null;
+						
 				}
 				else if(CTX.COMPILE==ctx)
 				{
@@ -257,7 +262,8 @@ public class VcxprojSync
 						{
 							item = new VcxprojClItem();
 							item.setRelativePath(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
-							Log.v("Filter ClCompile not matches any vcxproj include");
+							mClCompileItems.put(item.getFilePath(), item);
+							logFilterNoItem.add("Found in filters, not present in vcxproj: " + item.getFilePath());
 						}
 					}
 					if(item.addFilterLine(line)) //is element closed?
@@ -655,6 +661,9 @@ public class VcxprojSync
 		logFileMoved = new ArrayList<String>();
 		logFileExcluded = new ArrayList<String>();
 		logFileFilterMoved = new ArrayList<String>();
+		
+		logFilterNoItem = new ArrayList<String>();
+		logItemNoFilter = new ArrayList<String>();
 	}
 	
 	private void addDeletedToLog(String baseFilter)
@@ -681,6 +690,9 @@ public class VcxprojSync
 	public void printLog(String baseFilter)
 	{
 		addDeletedToLog(baseFilter);
+		for(String s: logFilterNoItem) Log.d(s);
+		for(String s: logItemNoFilter) Log.d(s);
+		
 		for(String s: logFilterAdded) Log.d(s);
 		for(String s: logFilterRemoved) Log.d(s);
 
