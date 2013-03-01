@@ -1,5 +1,6 @@
 package com.programmingteam.vs2010;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +11,9 @@ public class VcxprojClItem
 	ArrayList<String> mFilterLines;
 	ArrayList<String> mProjLines;
 	
-	String mFileRelativePath;
+	File mFileRelativePath;
 	
 	boolean mFlgDeleted;
-	
 	boolean mFlgFilterLines;
 	
 	enum Ctx { PROJ, FILTER }
@@ -30,7 +30,7 @@ public class VcxprojClItem
 	{
 		if(line.matches(".*<ClInclude .*") || line.matches(".*<ClCompile .*"))
 		{
-			mFileRelativePath = line.substring(line.indexOf("\"")+1, line.lastIndexOf("\""));
+			mFileRelativePath = new File(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
 			return line.matches(".*/>.*");
 		}
 		else if(line.matches(".*</ClInclude>.*") || line.matches(".*</ClCompile>.*"))
@@ -50,7 +50,7 @@ public class VcxprojClItem
 		if(line.matches(".*<ClInclude .*") || line.matches(".*<ClCompile .*"))
 		{
 			if( mFileRelativePath!=null && 
-				!mFileRelativePath.equals(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\""))))
+				!mFileRelativePath.getPath().equals(line.substring(line.indexOf("\"")+1, line.lastIndexOf("\""))))
 			{
 				Log.e("Error: filter path not matches proj path!");
 				System.exit(-1);
@@ -68,14 +68,14 @@ public class VcxprojClItem
 		}
 	}
 	
-	public String getFilePath()
+	public File getFile()
 	{
 		return mFileRelativePath;
 	}
 	
 	public void setRelativePath(String path)
 	{
-		mFileRelativePath = path;
+		mFileRelativePath = new File(path);
 	}
 	
 	public void setFilter(String filter)
