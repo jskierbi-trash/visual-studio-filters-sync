@@ -1,4 +1,4 @@
-package com.programmingteam;
+package org.programmingteam;
 
 import java.io.File;
 

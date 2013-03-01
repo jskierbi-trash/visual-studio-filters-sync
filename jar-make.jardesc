@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="WINDOWS-1250" standalone="no"?>
+<jardesc>
+    <jar path="VS-filter-sync/bin/VS-filter-sync.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/VS-Filter-Sync/jar-make.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=VS-Filter-Sync/src&lt;org.programmingteam{Main.java[Main" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=VS-Filter-Sync/src"/>
+        <file path="/VS-Filter-Sync/.classpath"/>
+    </selectedElements>
+</jardesc>

@@ -1,4 +1,4 @@
-package com.programmingteam.qsync;
+package org.programmingteam.qsync;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,14 +9,14 @@ import javax.management.modelmbean.XMLParseException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.programmingteam.Helpers;
+import org.programmingteam.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.programmingteam.Helpers;
-import com.programmingteam.Log;
 
 ///
 /// \brief qsync XML file representation

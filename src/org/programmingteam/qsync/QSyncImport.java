@@ -1,11 +1,12 @@
-package com.programmingteam.qsync;
+package org.programmingteam.qsync;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.programmingteam.Log;
+import org.programmingteam.Log;
+
 
 ///
 /// \brief representation of single import to vcxproj/filters files

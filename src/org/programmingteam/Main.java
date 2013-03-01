@@ -1,14 +1,15 @@
-package com.programmingteam;
+package org.programmingteam;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.programmingteam.qsync.QSync;
-import com.programmingteam.qsync.QSyncImport;
-import com.programmingteam.qsync.QSyncVcxproj;
-import com.programmingteam.vs2010.VcxprojSync;
+import org.programmingteam.qsync.QSync;
+import org.programmingteam.qsync.QSyncImport;
+import org.programmingteam.qsync.QSyncVcxproj;
+import org.programmingteam.vs2010.VcxprojSync;
+
 
 public class Main
 {

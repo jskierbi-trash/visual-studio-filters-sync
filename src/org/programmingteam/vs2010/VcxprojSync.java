@@ -1,4 +1,4 @@
-package com.programmingteam.vs2010;
+package org.programmingteam.vs2010;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,8 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.programmingteam.Helpers;
-import com.programmingteam.Log;
+import org.programmingteam.Helpers;
+import org.programmingteam.Log;
+
 
 ///
 /// \brief Visual 2010 project representation
@@ -400,7 +401,7 @@ public class VcxprojSync
 			}
 			else if(!item.getFile().getPath().equals(relativeFile))
 			{
-				logFileFilterMoved.add("File renamed: " + item.getFile().getPath() + " => " + relativeFile);
+				logFileFilterMoved.add("File renamed: (" + item.getFile().getPath() + ") => (" + relativeFile + ")");
 			}
 			
 			item.setFilter(filter);

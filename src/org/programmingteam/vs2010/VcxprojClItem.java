@@ -1,10 +1,11 @@
-package com.programmingteam.vs2010;
+package org.programmingteam.vs2010;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.programmingteam.Log;
+import org.programmingteam.Log;
+
 
 public class VcxprojClItem
 {

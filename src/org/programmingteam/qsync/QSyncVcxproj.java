@@ -1,11 +1,12 @@
-package com.programmingteam.qsync;
+package org.programmingteam.qsync;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.programmingteam.Helpers;
-import com.programmingteam.Log;
+import org.programmingteam.Helpers;
+import org.programmingteam.Log;
+
 
 ///
 /// \brief Representation of project defined in qsync file
