@@ -35,11 +35,11 @@ public class VcxprojSync
 	///vcxproj.filters structure
 	private ArrayList<String> mFilterHeader;
 	private ArrayList<String> mFilterFooter;
-	private LinkedHashMap<String, Boolean> mFilters; //TODO create filter class (String + boolean)
+	private LinkedHashMap<String, Boolean> mFilters; //Keep order of insertions
 
 	///Shared items
-	private LinkedHashMap<File, VcxprojClItem> mClIncludeItems;
-	private LinkedHashMap<File, VcxprojClItem> mClCompileItems;
+	private LinkedHashMap<File, VcxprojClItem> mClIncludeItems; //Keep order of insertions
+	private LinkedHashMap<File, VcxprojClItem> mClCompileItems; //Keep order of insertions
 	
 	private enum CTX { NOCTX, FILTER, INCLUDE, COMPILE }
 	
