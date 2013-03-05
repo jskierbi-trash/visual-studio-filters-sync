@@ -323,6 +323,8 @@ public class VcxprojSync
 		
 		for(Entry<File, VcxprojClItem> i: mClCompileItems.entrySet())
 		{
+			
+			
 			boolean filterExists = mFilters.containsKey(i.getValue().getFilter());
 			boolean filterValid =true;
 			if(filterExists) filterValid = mFilters.get(i.getValue().getFilter());
@@ -387,10 +389,7 @@ public class VcxprojSync
 			if(SyncType.INCLUDE==type) mClIncludeItems.put(new File(relativeFile), item);
 		}
 		else if(item!=null)
-		{
-			if(item.getFile().getPath().matches(".*AcquireN.*"))
-				System.out.println("");
-			
+		{			
 			if(isExcluded) item.setExcludeFromBuild(logFileExcluded);
 			item.setDeleted(false);
 			if(!item.getFilter().equals(filter))
