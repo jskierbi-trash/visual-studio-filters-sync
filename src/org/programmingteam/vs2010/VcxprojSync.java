@@ -306,10 +306,13 @@ public class VcxprojSync
 		}
 	}
 	
-	public void checkFilters()
+	public void checkFileFilters()
 	{
 		for(Entry<File, VcxprojClItem> i: mClIncludeItems.entrySet())
 		{
+			if(i.getValue().getFilter().equals(""))
+				continue;
+			
 			boolean filterExists = mFilters.containsKey(i.getValue().getFilter());
 			boolean filterValid =true;
 			if(filterExists) filterValid = mFilters.get(i.getValue().getFilter());
@@ -323,7 +326,8 @@ public class VcxprojSync
 		
 		for(Entry<File, VcxprojClItem> i: mClCompileItems.entrySet())
 		{
-			
+			if(i.getValue().getFilter().equals(""))
+				continue;
 			
 			boolean filterExists = mFilters.containsKey(i.getValue().getFilter());
 			boolean filterValid =true;

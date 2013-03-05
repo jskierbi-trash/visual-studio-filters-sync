@@ -113,7 +113,7 @@ public class VcxprojClItem
 			}
 		}
 		
-		return null;
+		return "";
 	}
 	
 	public void setExcludeFromBuild(ArrayList<String> log)
