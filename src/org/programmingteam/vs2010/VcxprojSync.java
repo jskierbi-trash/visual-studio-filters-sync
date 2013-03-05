@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -34,11 +35,11 @@ public class VcxprojSync
 	///vcxproj.filters structure
 	private ArrayList<String> mFilterHeader;
 	private ArrayList<String> mFilterFooter;
-	private HashMap<String, Boolean> mFilters;
+	private LinkedHashMap<String, Boolean> mFilters; //TODO create filter class (String + boolean)
 
 	///Shared items
-	private HashMap<File, VcxprojClItem> mClIncludeItems;
-	private HashMap<File, VcxprojClItem> mClCompileItems;
+	private LinkedHashMap<File, VcxprojClItem> mClIncludeItems;
+	private LinkedHashMap<File, VcxprojClItem> mClCompileItems;
 	
 	private enum CTX { NOCTX, FILTER, INCLUDE, COMPILE }
 	
@@ -66,9 +67,9 @@ public class VcxprojSync
 		mFilterHeader = new ArrayList<String>();
 		mFilterFooter = new ArrayList<String>();
 		
-		mClIncludeItems = new HashMap<File, VcxprojClItem>();
-		mClCompileItems = new HashMap<File, VcxprojClItem>();
-		mFilters = new HashMap<String, Boolean>();
+		mClIncludeItems = new LinkedHashMap<File, VcxprojClItem>();
+		mClCompileItems = new LinkedHashMap<File, VcxprojClItem>();
+		mFilters = new LinkedHashMap<String, Boolean>();
 
 		clearLog();
 		
