@@ -15,7 +15,7 @@ public class Helpers
 	///
 	public static boolean isCompile(File file, String compileExt)
 	{
-		String ext = getFileExt(file.getAbsolutePath());
+		String ext = getFileExt(file.getName());
 		if( compileExt.matches("(^|.*,)"+ext+"(,.*|$)"))
 			return true;
 		else
@@ -30,7 +30,7 @@ public class Helpers
 	///
 	public static boolean isInclude(File file, String incExt)
 	{
-		String ext = getFileExt(file.getAbsolutePath());
+		String ext = getFileExt(file.getName());
 		if(incExt.matches("(^|.*,)"+ext+"(,.*|$)"))
 			return true;
 		else
