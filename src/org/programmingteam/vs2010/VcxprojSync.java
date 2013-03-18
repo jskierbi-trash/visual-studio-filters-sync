@@ -773,4 +773,22 @@ public class VcxprojSync
 		for(String s: logFileExcluded) Log.d(s);
 		clearLog();
 	}
+	
+	public void printStats()
+	{
+		Log.d("Changes: " + getNumChanges());
+	}
+	
+	public int getNumChanges()
+	{
+		return 	logFilterNoItem.size()+
+				logItemNoFilter.size()+
+				logFilterAdded.size()+
+				logFilterRemoved.size()+
+				logFileAdded.size()+
+				logFileMoved.size()+
+				logFileRemoved.size()+
+				logFileFilterMoved.size()+
+				logFileExcluded.size();
+	}
 }

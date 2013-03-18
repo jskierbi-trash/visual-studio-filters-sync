@@ -118,15 +118,19 @@ public class Main
 			}
 				
 			//TODO save files!
-			vcxprojSync.checkFileFilters();
-			if(!OPTS.isPretend())
+			if(vcxprojSync.getNumChanges()==0)
 			{
-				vcxprojSync.saveVcxproj(OPTS.getOutput());
-				vcxprojSync.saveVcxprojFilters(OPTS.getOutput());
+				Log.d("Pretend option: skipping file save...");
+			}
+			else if(OPTS.isPretend())
+			{
+				Log.d("0 modifications detected, skipping file save...");
 			}
 			else
 			{
-				Log.d("Pretend option: skipping file save...");
+				Log.d(vcxprojSync.getNumChanges() + " modifications detected, saving file...");
+				vcxprojSync.saveVcxproj(OPTS.getOutput());
+				vcxprojSync.saveVcxprojFilters(OPTS.getOutput());
 			}
 			Log.d("Done.");
 		}
