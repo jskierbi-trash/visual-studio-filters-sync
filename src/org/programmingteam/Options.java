@@ -5,6 +5,7 @@ public class Options
 	private boolean pretend;
 	private boolean verbose;
 	private boolean quiet;
+	private boolean interactive;
 	private String output;
 	private String file;
 	
@@ -13,10 +14,17 @@ public class Options
 		pretend = false;
 		verbose = false;
 		quiet   = false;
+		interactive = false;
 		output  = null;
 		
 		for(int i=0; i<args.length; ++i)
 		{
+			if(args[i].equals("-i") || args[i].equals("--interactive"))
+			{
+				interactive = true;
+				continue;
+			}
+			
 			if(args[i].equals("-p") || args[i].equals("--pretend"))
 			{
 				pretend = true;
@@ -81,6 +89,11 @@ public class Options
 	public boolean isQuiet()
 	{
 		return quiet;
+	}
+	
+	public boolean isInteractive()
+	{
+		return interactive;
 	}
 
 	public String getOutput()

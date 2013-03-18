@@ -1,7 +1,9 @@
 package org.programmingteam;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,11 @@ import org.programmingteam.vs2010.VcxprojSync;
 public class Main
 {
 	public static Options OPTS;
+	
+	public enum InteractiveOption
+	{
+		SAVE, CANCEL, INVALID
+	};
 	
 	public static void main(String[] args)
 	{	
@@ -120,17 +127,48 @@ public class Main
 			//TODO save files!
 			if(vcxprojSync.getNumChanges()==0)
 			{
-				Log.d("Pretend option: skipping file save...");
+				Log.d("0 modifications detected, skipping file save...");
 			}
 			else if(OPTS.isPretend())
 			{
-				Log.d("0 modifications detected, skipping file save...");
+				Log.d("Pretend option: skipping file save...");
 			}
 			else
 			{
-				Log.d(vcxprojSync.getNumChanges() + " modifications detected, saving file...");
-				vcxprojSync.saveVcxproj(OPTS.getOutput());
-				vcxprojSync.saveVcxprojFilters(OPTS.getOutput());
+				Log.d_noln(vcxprojSync.getNumChanges() + " modifications detected");
+				
+				InteractiveOption opt = InteractiveOption.SAVE;
+				if(OPTS.isInteractive())
+				{
+					opt = InteractiveOption.INVALID;
+					while(opt==InteractiveOption.INVALID)
+					{
+						Log.d_noln(" [s]ave [c]ancel ");
+						String string ="";
+						InputStreamReader input = new InputStreamReader(System.in);
+						BufferedReader reader = new BufferedReader(input);
+						try { string = reader.readLine(); }
+						catch(Exception e) {}
+						
+						if(string.equals("s"))
+							opt = InteractiveOption.SAVE;
+						else if(string.equals("c"))
+							opt = InteractiveOption.CANCEL;
+						else
+							Log.d_noln(" invalid option");
+					}
+				}
+				
+				if(opt==InteractiveOption.SAVE)
+				{
+					Log.d("saving...");
+					vcxprojSync.saveVcxproj(OPTS.getOutput());
+					vcxprojSync.saveVcxprojFilters(OPTS.getOutput());
+				}
+				else
+				{
+					Log.d("skipping file save");
+				}
 			}
 			Log.d("Done.");
 		}

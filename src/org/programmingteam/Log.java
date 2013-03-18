@@ -19,4 +19,10 @@ public class Log
 		if(!Main.OPTS.isQuiet()) // TODO do we log errors in quietmode?
 			System.err.println(s);
 	}
+	
+	public static void d_noln(String s)
+	{
+		if(!Main.OPTS.isQuiet())
+			System.out.print(s);
+	}
 }

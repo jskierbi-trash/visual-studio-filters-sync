@@ -56,6 +56,8 @@ public class VcxprojSync
 	private ArrayList<String> logFilterNoItem;
 	private ArrayList<String> logItemNoFilter;
 	
+	private int mNumChanges =0;
+	
 	public VcxprojSync(String vcxproj, String vcxprojFilters)
 	{		
 		mProjFile = new File(vcxproj);
@@ -771,6 +773,18 @@ public class VcxprojSync
 		for(String s: logFileRemoved) Log.d(s);
 		for(String s: logFileFilterMoved) Log.d(s);
 		for(String s: logFileExcluded) Log.d(s);
+		
+		mNumChanges = 
+			logFilterNoItem.size()+
+			logItemNoFilter.size()+
+			logFilterAdded.size()+
+			logFilterRemoved.size()+
+			logFileAdded.size()+
+			logFileMoved.size()+
+			logFileRemoved.size()+
+			logFileFilterMoved.size()+
+			logFileExcluded.size();
+		
 		clearLog();
 	}
 	
@@ -781,14 +795,6 @@ public class VcxprojSync
 	
 	public int getNumChanges()
 	{
-		return 	logFilterNoItem.size()+
-				logItemNoFilter.size()+
-				logFilterAdded.size()+
-				logFilterRemoved.size()+
-				logFileAdded.size()+
-				logFileMoved.size()+
-				logFileRemoved.size()+
-				logFileFilterMoved.size()+
-				logFileExcluded.size();
+		return 	mNumChanges;
 	}
 }
