@@ -104,9 +104,11 @@ public class Options
 	void printUsage()
 	{
 		System.out.println("Usage: QubicSync [OPTION]... FILE");
+		System.out.println("Version: " + Version.NAME);
 		System.out.println("Synchronizes Visual Studio project files (*.vcxproj and ");
 		System.out.println(" *.vcxproj.filters) with filesystem using config file.");
 		System.out.println("");
+		System.out.println("  -i, --interactive    interactive mode, ask before each change is made");
 		System.out.println("  -o, --output <file>  generates output to specified file");
 		System.out.println("  -p, --pretend        create no output file, only synchronization logs");
 		System.out.println("  -q, --quiet          disable console output");
