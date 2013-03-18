@@ -580,7 +580,8 @@ public class VcxprojSync
 				out.write(s);
 				out.newLine();
 			}
-			
+
+			out.newLine();
 			out.close();
 		}
 		catch (IOException e)
@@ -680,7 +681,8 @@ public class VcxprojSync
 				out.write(s);
 				out.newLine();
 			}
-			
+
+			out.newLine();
 			out.close();
 		}
 		catch (IOException e)
