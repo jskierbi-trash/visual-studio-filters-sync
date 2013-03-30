@@ -1,0 +1,16 @@
+<qubicsync version="1.0">
+	<ClInclude ext="h,hpp" />
+	<ClCompile ext="cpp,c" />
+	
+	<vcxproj proj="/proj.win/project.vcxproj">
+		<import tofilter="/src/" includeEmptyDirs="false">
+			<include
+				dir="/include/"
+				accept="*\.h" />
+			<src
+				dir="/src/"
+				accept="*\.(cpp|h)" />
+		</import>
+	</vcxproj>
+
+</qubicsync>
