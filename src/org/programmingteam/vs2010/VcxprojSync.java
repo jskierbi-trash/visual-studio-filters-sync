@@ -370,6 +370,7 @@ public class VcxprojSync
 		}
 	}
 	
+	/// \brief Checks whether file exists and adds it to filters if needed
 	public void syncFile(String relativeFile, String filter, SyncType type, boolean isExcluded)
 	{
 		this.syncFilter(filter);
@@ -774,7 +775,7 @@ public class VcxprojSync
 		for(String s: logFileFilterMoved) Log.d(s);
 		for(String s: logFileExcluded) Log.d(s);
 		
-		mNumChanges = 
+		mNumChanges += 
 			logFilterNoItem.size()+
 			logItemNoFilter.size()+
 			logFilterAdded.size()+
