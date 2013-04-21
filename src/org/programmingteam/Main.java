@@ -52,6 +52,9 @@ public class Main
 				if(imp.getInclude()!=null) dirList.add(new File(imp.getInclude()));
 				if(imp.getSrc()!=null) dirList.add(new File(imp.getSrc()));
 				
+				Log.v("Include directory: " + imp.getInclude());
+				Log.v("Src directory: " + imp.getSrc());
+				
 				while(dirList.size()>0)
 				{
 					File dir = dirList.get(0);
@@ -77,46 +80,49 @@ public class Main
 						}
 						else
 						{
-							//TODO add handling misc
-							boolean include =false;
-							if( Helpers.isCompile(listFiles[i], qsync.getCompileExt()) ||
-								(include=Helpers.isInclude(listFiles[i], qsync.getIncludeExt())))
+							boolean include = listFiles[i].getAbsolutePath().startsWith(imp.getInclude());
+							//Log.v("File: " + listFiles[i].getAbsolutePath());
+							//Log.v("IncludeDir: " + imp.getInclude());
+							//Log.v("Include: " + include);
+						
+							if(include && !imp.matchesInclue(listFiles[i].getName()))
 							{
-								if(include && !imp.matchesInclue(listFiles[i].getName()))
-								{
-									Log.v("Skipping file: "+listFiles[i]+" (not matching regexp)");
-									continue;
-								}
-								if(!include && !imp.matchesSrc(listFiles[i].getName()))
-								{
-									Log.v("Skipping file: "+listFiles[i]+" (not matching regexp)");
-									continue;
-								}
-								
-								boolean isExcludedFromBuild = false;
-								if(include)
-									isExcludedFromBuild = imp.isExcludedInc(""+listFiles[i].getName());
-								else
-									isExcludedFromBuild = imp.isExcludedSrc(""+listFiles[i].getName());
-								
-								VcxprojSync.SyncType syncType = VcxprojSync.SyncType.COMPILE;
-								if(include) syncType = VcxprojSync.SyncType.INCLUDE;
-								
-								try
-								{
-									String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
-									toFilter = Helpers.getPath(toFilter);
-									toFilter = Helpers.stripSlashes(toFilter);
-									vcxprojSync.syncFile(
-											qsyncProj.getRelativeFile(listFiles[i].getCanonicalPath()), 
-											toFilter, 
-											syncType, 
-											isExcludedFromBuild);
-								}
-								catch(IOException e)
-								{
-									Log.e("Error obtaining folder cannonical path!" + listFiles[i]); 
-								}
+								Log.v("Skipping file: " + listFiles[i] + " (not matching regexp - include)");
+								continue;
+							}
+							if(!include && !imp.matchesSrc(listFiles[i].getName()))
+							{
+								Log.v("Skipping file: " + listFiles[i] + " (not matching regexp - src)");
+								continue;
+							}
+							else
+							{
+								Log.v("Adding file: " + listFiles[i] + " (matching regexp)");
+							}
+							
+							boolean isExcludedFromBuild = include?
+									imp.isExcludedInc(""+listFiles[i].getName()):
+									imp.isExcludedSrc(""+listFiles[i].getName());
+							
+							VcxprojSync.SyncType syncType = 
+									Helpers.isCompile(listFiles[i], qsync.getCompileExt())?
+									VcxprojSync.SyncType.COMPILE:
+									VcxprojSync.SyncType.INCLUDE;
+							
+							try
+							{
+								String toFilter = imp.getFileFilterPath(listFiles[i].getAbsolutePath());
+								toFilter = Helpers.getPath(toFilter);
+								toFilter = Helpers.stripSlashes(toFilter);
+								vcxprojSync.syncFile(
+										qsyncProj.getRelativeFile(listFiles[i].getCanonicalPath()), 
+										toFilter, 
+										syncType, 
+										isExcludedFromBuild);
+							}
+							catch(IOException e)
+							{
+								Log.e("Error obtaining folder cannonical path!" + listFiles[i]); 
 							}
 						}
 					}

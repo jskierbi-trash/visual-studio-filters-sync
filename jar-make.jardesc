@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="visual-studio-filters-sync/bin/vsfiltersync.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/visual-studio-filters-sync/jar-make.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <jar path="visual-studio-filter-sync/bin/vsfiltersync.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/visual-studio-filter-sync/jar-make.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" mainClassHandleIdentifier="=visual-studio-filters-sync/src&lt;org.programmingteam{Main.java[Main" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <manifest generateManifest="true" mainClassHandleIdentifier="=visual-studio-filter-sync/src&lt;org.programmingteam{Main.java[Main" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <file path="/visual-studio-filters-sync/.classpath"/>
-        <javaElement handleIdentifier="=visual-studio-filters-sync/src"/>
+        <javaElement handleIdentifier="=visual-studio-filter-sync/src"/>
+        <file path="/visual-studio-filter-sync/.classpath"/>
+        <file path="/visual-studio-filter-sync/jar-make.jardesc"/>
+        <file path="/visual-studio-filter-sync/.project"/>
+        <file path="/visual-studio-filter-sync/.gitignore"/>
     </selectedElements>
 </jardesc>

@@ -113,7 +113,6 @@ public class Options
 		System.exit(-1);
 	}
 	
-	
 	void printUsage()
 	{
 		System.out.println("Usage: QubicSync [OPTION]... FILE");
