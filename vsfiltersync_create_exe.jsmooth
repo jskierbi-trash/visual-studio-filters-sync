@@ -8,9 +8,9 @@
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
 <embeddedJar>true</embeddedJar>
-<executableName>dist\vsfiltersync-0.07.exe</executableName>
+<executableName>dist\0.08\vsfiltersync-0.08.exe</executableName>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>bin\vsfiltersync.jar</jarLocation>
+<jarLocation>dist\0.08\vsfiltersync-0.08.jar</jarLocation>
 <mainClassName>org.programmingteam.Main</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
