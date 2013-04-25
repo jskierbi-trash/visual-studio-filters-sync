@@ -80,34 +80,36 @@ public class Main
 						}
 						else
 						{
-							boolean include = listFiles[i].getAbsolutePath().startsWith(imp.getInclude());
-							//Log.v("File: " + listFiles[i].getAbsolutePath());
-							//Log.v("IncludeDir: " + imp.getInclude());
-							//Log.v("Include: " + include);
-						
-							if(include && !imp.matchesInclue(listFiles[i].getName()))
+							boolean flgImportInclude = listFiles[i].getAbsolutePath().startsWith(imp.getInclude());
+							boolean flgMatchGlobalIncludeExt = Helpers.isInclude(listFiles[i], qsync.getIncludeExt());
+							boolean flgMatchGlobalCompileExt = Helpers.isCompile(listFiles[i], qsync.getCompileExt());
+							boolean flgMatchGlobalPattern = flgMatchGlobalCompileExt || flgMatchGlobalIncludeExt;
+							boolean flgAddFile = false;
+							
+							if(flgImportInclude && imp.matchesInclue(listFiles[i].getName()) && flgMatchGlobalPattern)
 							{
-								Log.v("Skipping file: " + listFiles[i] + " (not matching regexp - include)");
-								continue;
+								Log.v("+" + listFiles[i] +" (added)");
+								flgAddFile = true;
 							}
-							if(!include && !imp.matchesSrc(listFiles[i].getName()))
+							else if(!flgImportInclude && imp.matchesSrc(listFiles[i].getName()) && flgMatchGlobalPattern)
 							{
-								Log.v("Skipping file: " + listFiles[i] + " (not matching regexp - src)");
-								continue;
-							}
-							else
-							{
-								Log.v("Adding file: " + listFiles[i] + " (matching regexp)");
+								Log.v("+" + listFiles[i] +" (added)");
+								flgAddFile = true;
 							}
 							
-							boolean isExcludedFromBuild = include?
+							if(!flgAddFile)
+							{
+								Log.v("-" + listFiles[i] + " (skipped)");
+								continue;
+							}
+							
+							boolean isExcludedFromBuild = flgImportInclude?
 									imp.isExcludedInc(""+listFiles[i].getName()):
 									imp.isExcludedSrc(""+listFiles[i].getName());
-							
-							VcxprojSync.SyncType syncType = 
-									Helpers.isCompile(listFiles[i], qsync.getCompileExt())?
-									VcxprojSync.SyncType.COMPILE:
-									VcxprojSync.SyncType.INCLUDE;
+									
+							VcxprojSync.SyncType syncType = flgMatchGlobalIncludeExt?
+									VcxprojSync.SyncType.INCLUDE:
+									VcxprojSync.SyncType.COMPILE;
 							
 							try
 							{
