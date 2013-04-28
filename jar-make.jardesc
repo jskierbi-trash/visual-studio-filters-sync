@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="visual-studio-filters-sync/dist/0.08/vsfiltersync.jar"/>
+    <jar path="visual-studio-filters-sync/dist/0.09/vsfiltersync.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/visual-studio-filters-sync/jar-make.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>

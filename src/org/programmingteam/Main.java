@@ -80,18 +80,19 @@ public class Main
 						}
 						else
 						{
-							boolean flgImportInclude = listFiles[i].getAbsolutePath().startsWith(imp.getInclude());
+							//Watch out! imp.getInclude() and imp.getSrc() can return nulls!
+							boolean flgIncludeDir = imp.getInclude()!=null && listFiles[i].getAbsolutePath().startsWith(imp.getInclude());
 							boolean flgMatchGlobalIncludeExt = Helpers.isInclude(listFiles[i], qsync.getIncludeExt());
 							boolean flgMatchGlobalCompileExt = Helpers.isCompile(listFiles[i], qsync.getCompileExt());
 							boolean flgMatchGlobalPattern = flgMatchGlobalCompileExt || flgMatchGlobalIncludeExt;
 							boolean flgAddFile = false;
 							
-							if(flgImportInclude && imp.matchesInclue(listFiles[i].getName()) && flgMatchGlobalPattern)
+							if(flgIncludeDir && imp.matchesInclue(listFiles[i].getName()) && flgMatchGlobalPattern)
 							{
 								Log.v("+" + listFiles[i] +" (added)");
 								flgAddFile = true;
 							}
-							else if(!flgImportInclude && imp.matchesSrc(listFiles[i].getName()) && flgMatchGlobalPattern)
+							else if(!flgIncludeDir && imp.matchesSrc(listFiles[i].getName()) && flgMatchGlobalPattern)
 							{
 								Log.v("+" + listFiles[i] +" (added)");
 								flgAddFile = true;
@@ -103,7 +104,7 @@ public class Main
 								continue;
 							}
 							
-							boolean isExcludedFromBuild = flgImportInclude?
+							boolean isExcludedFromBuild = flgIncludeDir?
 									imp.isExcludedInc(""+listFiles[i].getName()):
 									imp.isExcludedSrc(""+listFiles[i].getName());
 									
