@@ -140,7 +140,7 @@ public class Main
 			}
 			else if(OPTS.isPretend())
 			{
-				Log.d("Pretend option: skipping file save...");
+				Log.d("Pretend option: skipping file save... ("+ vcxprojSync.getNumChanges() +" changes detected)");
 			}
 			else
 			{
